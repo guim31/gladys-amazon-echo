@@ -10,6 +10,10 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed to **Echo Media Player**, with a new cover (Gladys → Echo → sound) and descriptions that say the direction, so it is not mistaken for the Gladys "Amazon Alexa" integration (voice control of Gladys).
+
 ## [1.0.1] - 2026-10-12
 
 ### Added

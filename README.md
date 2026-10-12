@@ -1,4 +1,6 @@
-# Amazon Echo for Gladys Assistant
+# Echo Media Player for Gladys Assistant
+
+> **Gladys → Echo.** Not the official Gladys "Amazon Alexa" integration (voice control of Gladys from Alexa): this one goes the other way and makes your Echo speak.
 
 Make your **Amazon Echo** speakers talk from [Gladys Assistant](https://gladysassistant.com)
 scenes, run your **Alexa routines**, and control music, volume and Do Not Disturb.
@@ -51,7 +53,7 @@ a scene on.
 
 ## Installation
 
-1. In Gladys, **Integrations → Store**, install **Amazon Echo**.
+1. In Gladys, **Integrations → Store**, install **Echo Media Player**.
 2. In its **Configuration** tab, choose your **Amazon marketplace** and **save**.
 3. Click **Connect**: Amazon's own sign-in page opens in a new tab. Sign in there (password,
    verification code, captcha are all handled by Amazon; Gladys never sees your password).

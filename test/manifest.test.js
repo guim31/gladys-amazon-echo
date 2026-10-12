@@ -190,7 +190,7 @@ test('field placeholders are multi-language objects', () => {
 });
 
 test('the manifest identifies this integration', () => {
-  assert.equal(manifest.name, 'Amazon Echo');
+  assert.equal(manifest.name, 'Echo Media Player');
   assert.equal(manifest.type, 'device');
   assert.deepEqual(manifest.transports, ['cloud']);
   assert.ok(manifest.docker_image.startsWith('ghcr.io/guim31/gladys-amazon-echo:'));

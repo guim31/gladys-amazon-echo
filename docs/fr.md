@@ -1,4 +1,6 @@
-# Amazon Echo
+# Echo Media Player
+
+> **Gladys → Echo** : c'est Gladys qui fait parler vos Echo. À ne pas confondre avec l'intégration **Amazon Alexa** de Gladys (avec Gladys Plus), qui sert à piloter Gladys à la voix depuis Alexa ; les deux peuvent tourner ensemble.
 
 Faites parler vos Echo dans vos scènes, lancez vos routines Alexa, et pilotez musique, volume et
 mode Ne pas déranger depuis Gladys.
@@ -21,7 +23,7 @@ mode Ne pas déranger depuis Gladys.
 Une seule fois. Gladys ne voit jamais votre mot de passe : vous vous connectez sur la page d'Amazon
 elle-même.
 
-1. Ouvrez **Intégrations → Amazon Echo → Configuration**.
+1. Ouvrez **Intégrations → Echo Media Player → Configuration**.
 2. Choisissez votre **site Amazon** (celui de votre compte : amazon.fr, amazon.de…) et cliquez sur
    **Enregistrer**.
 3. Cliquez sur **Connecter**. La page de connexion d'Amazon s'ouvre dans un nouvel onglet.
@@ -76,7 +78,7 @@ ensuite (Gladys les garde une fois l'appareil ajouté) et la langue des messages
 
 ## Dans les scènes
 
-**Faire parler un Echo** (actions Amazon Echo) :
+**Faire parler un Echo** (actions Echo Media Player) :
 
 - **Echo** : un ou plusieurs ; un groupe parle par ses enceintes.
 - **Texte à dire** : les variables de scène sont permises. Jusqu'à 1 000 caractères ; Alexa dit

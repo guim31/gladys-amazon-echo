@@ -1,4 +1,6 @@
-# Amazon Echo
+# Echo Media Player
+
+> **Gladys → Echo**: Gladys makes your Echo speak. Not to be confused with Gladys' **Amazon Alexa** integration (with Gladys Plus), which lets you control Gladys by voice from Alexa; both can run side by side.
 
 Make your Echos speak in your scenes, run your Alexa routines, and control music, volume and Do Not
 Disturb from Gladys.
@@ -20,7 +22,7 @@ Disturb from Gladys.
 
 You do this once. Gladys never sees your password: you sign in on Amazon's own page.
 
-1. Open **Integrations → Amazon Echo → Configuration**.
+1. Open **Integrations → Echo Media Player → Configuration**.
 2. Choose your **Amazon marketplace** (the site of your account: amazon.fr, amazon.de…) and click
    **Save**.
 3. Click **Connect**. Amazon's sign-in page opens in a new tab.
@@ -73,7 +75,7 @@ afterwards (Gladys keeps them once a device is added) and the language of the er
 
 ## In scenes
 
-**Make an Echo speak** (Amazon Echo actions):
+**Make an Echo speak** (Echo Media Player actions):
 
 - **Echos**: one or several; a group speaks through its speakers.
 - **Text to say**: scene variables are allowed. Up to 1,000 characters; Alexa says long texts in
