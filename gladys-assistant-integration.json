@@ -8,8 +8,8 @@
     "de": "Lass deine Echos in Szenen sprechen, starte Alexa-Routinen, steuere Musik und Lautstärke.",
     "es": "Haga hablar a sus Echo en escenas, lance rutinas de Alexa, controle música y volumen."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-amazon-echo:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-amazon-echo:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-amazon-echo/main/cover.png",
   "categories": ["multimedia", "notifications", "assistants"],

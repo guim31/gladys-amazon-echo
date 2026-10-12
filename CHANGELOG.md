@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-12
+
 ### Added
 
 - Amazon Echo integration: one Gladys device per Echo and per multi-room
@@ -25,4 +27,5 @@ the notes of the version's GitHub Release.
 - Configuration buttons: list the Alexa routines, test the speech, sign out.
 - English, French, German and Spanish texts.
 
-[Unreleased]: https://github.com/guim31/gladys-amazon-echo/commits/main
+[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-amazon-echo/releases/tag/v1.0.1
