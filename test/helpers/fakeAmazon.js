@@ -63,7 +63,15 @@ export function createFakeAmazon({ domain = 'amazon.fr', players = {} } = {}) {
       body: state.players[request.query.deviceSerialNumber] ?? fixture('np-player-idle'),
     }),
     [`POST alexa.${domain} /api/np/command`]: () => ({ status: 200, text: '' }),
-    [`POST alexa.${domain} /api/behaviors/preview`]: () => ({ status: 200, text: '' }),
+    // As Amazon: a sequence naming another customer than the devices' owner
+    // (e.g. the amzn1.account… id) is refused.
+    [`POST alexa.${domain} /api/behaviors/preview`]: (request) => {
+      const named = [...String(request.body?.sequenceJson).matchAll(/"customerId":"([^"]*)"/g)];
+      if (named.some(([, id]) => id !== 'A1EXAMPLECUSTOMER')) {
+        return { status: 400, body: { message: 'Bad Request' } };
+      }
+      return { status: 200, text: '' };
+    },
     [`PUT alexa.${domain} /api/dnd/status`]: (request) => ({ body: request.body }),
     [`GET alexa.${domain} /api/behaviors/v2/automations`]: () => ({
       body: fixture('automations'),

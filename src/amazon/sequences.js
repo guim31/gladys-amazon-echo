@@ -62,12 +62,17 @@ function operation(type, skillId, payload) {
   return { '@type': OPERATION, type, skillId, operationPayload: payload };
 }
 
+/** The customer to name for a device: its owner, else the account's. */
+function customerOf(device, customerId) {
+  return device?.ownerCustomerId || customerId;
+}
+
 function deviceFields(device, customerId) {
   return {
     deviceType: device.deviceType,
     deviceSerialNumber: device.serialNumber,
     locale: device.locale,
-    customerId,
+    customerId: customerOf(device, customerId),
   };
 }
 
@@ -85,7 +90,8 @@ export function speakNodes(device, text, customerId) {
  * One announcement for every device of `devices` (groups already expanded).
  * `speak` is `{ type: 'text' | 'ssml', value }`.
  */
-export function announcementNode(devices, speak, customerId, display = speak.value) {
+export function announcementNode(devices, speak, accountCustomerId, display = speak.value) {
+  const customerId = customerOf(devices[0], accountCustomerId);
   return operation('AlexaAnnouncement', 'amzn1.ask.1p.routines.messaging', {
     expireAfter: 'PT5S',
     customerId,
@@ -176,7 +182,7 @@ const PLACEHOLDERS = {
   ALEXA_CURRENT_DEVICE_TYPE: (device) => device.deviceType,
   ALEXA_CURRENT_DSN: (device) => device.serialNumber,
   ALEXA_CURRENT_LOCALE: (device) => device.locale,
-  ALEXA_CUSTOMER_ID: (_device, customerId) => customerId,
+  ALEXA_CUSTOMER_ID: (device, customerId) => customerOf(device, customerId),
 };
 
 /** A copy of a routine sequence whose "this device" placeholders target `device`. */

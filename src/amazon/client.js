@@ -11,7 +11,7 @@
 // -----------------------------------------------------------------------------
 
 import { AmazonError, createQueue, errorOf, parseJson, send } from './http.js';
-import { exchangeCookies, fetchCsrf } from './auth.js';
+import { alexaCustomerId, exchangeCookies, fetchCsrf } from './auth.js';
 import { previewBody } from './sequences.js';
 
 // Amazon's own session cookies last longer; re-minting daily keeps them fresh
@@ -31,7 +31,9 @@ export class AlexaClient {
     this.queue = queue;
     this.now = now;
     this.session = null;
-    this.customerId = credentials.customer_id ?? null;
+    // Versions up to 1.0.3 stored the account id (amzn1.account…) here:
+    // ignored, the right one is read from /api/users/me.
+    this.customerId = alexaCustomerId(credentials.customer_id);
   }
 
   async ensureSession() {
@@ -43,7 +45,7 @@ export class AlexaClient {
     this.session = { jar, csrf, created: this.now() };
     if (!this.customerId) {
       const me = await this.rawRequest('GET', '/api/users/me?platform=ios&version=2.2.556530.0');
-      this.customerId = me?.id ?? null;
+      this.customerId = alexaCustomerId(me?.id);
     }
     return this.session;
   }

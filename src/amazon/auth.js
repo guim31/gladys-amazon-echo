@@ -194,9 +194,17 @@ export async function registerDevice(fetchImpl, flow, code) {
     domain: flow.domain,
     serial: flow.serial,
     refresh_token: refreshToken,
-    customer_id: success?.extensions?.customer_info?.user_id ?? null,
+    // The Alexa web API wants the customer id (A1…), not the account's
+    // `customer_info.user_id` (amzn1.account…): with that one, every sequence
+    // is refused with HTTP 400.
+    customer_id: alexaCustomerId(success?.customer_id ?? success?.extensions?.customer_id),
     registered_at: new Date().toISOString(),
   };
+}
+
+/** A customer id the Alexa web API accepts, or `null` (amzn1.account… is an account id). */
+export function alexaCustomerId(id) {
+  return typeof id === 'string' && id.trim() && !id.startsWith('amzn1.') ? id.trim() : null;
 }
 
 function tokenForm(fields) {

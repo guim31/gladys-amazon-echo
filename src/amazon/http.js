@@ -145,5 +145,21 @@ export function errorOf(response, what) {
   if (status >= 300 && status < 400) {
     return new AmazonError('session', `${what}: redirected to a sign-in page`, status);
   }
-  return new AmazonError('http', `${what}: HTTP ${status}`, status);
+  return new AmazonError('http', `${what}: HTTP ${status}${reasonOf(text)}`, status);
+}
+
+/**
+ * Amazon's short reason of a refusal (`message` of a JSON answer), for the
+ * logs: a bare "HTTP 400" says nothing. Only that field, cut and on one line;
+ * the rest of the answer may echo the request.
+ */
+function reasonOf(text) {
+  let message;
+  try {
+    message = JSON.parse(text)?.message;
+  } catch {
+    return '';
+  }
+  if (typeof message !== 'string' || !message.trim()) return '';
+  return ` (${message.replace(/\s+/g, ' ').trim().slice(0, 120)})`;
 }
