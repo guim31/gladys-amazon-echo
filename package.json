@@ -1,6 +1,6 @@
 {
   "name": "gladys-amazon-echo",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "description": "Gladys Assistant integration: make Amazon Echo devices speak, run Alexa routines, control music and volume.",
   "type": "module",

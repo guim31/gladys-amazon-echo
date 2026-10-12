@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-10-12
+
 ### Fixed
 
 - Every command sent to an Echo (speech, announcement, volume, routine) was refused by Amazon with `HTTP 400`: the sign-in kept the account id (`amzn1.account…`) where the Alexa web API expects the customer id. Each command now names the owner of its Echo, as Alexa Media Player does. Already signed in? Nothing to redo: the right id is read again from Amazon after the update.
@@ -44,7 +46,8 @@ the notes of the version's GitHub Release.
 - Configuration buttons: list the Alexa routines, test the speech, sign out.
 - English, French, German and Spanish texts.
 
-[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/guim31/gladys-amazon-echo/releases/tag/v1.0.1
