@@ -148,3 +148,16 @@ test('a routine is bound to the chosen device, other values untouched', () => {
     'ALEXA_CURRENT_LOCALE',
   );
 });
+
+test('each node names the owner of its device, else the account', () => {
+  const owned = { ...DOT, ownerCustomerId: 'A2OTHERHOUSEHOLD' };
+  assert.equal(
+    speakNodes(owned, 'Bonjour', CUSTOMER)[0].operationPayload.customerId,
+    'A2OTHERHOUSEHOLD',
+  );
+  assert.equal(volumeNode(owned, 30, CUSTOMER).operationPayload.customerId, 'A2OTHERHOUSEHOLD');
+  const announcement = announcementNode([owned], { type: 'text', value: 'Hi' }, CUSTOMER);
+  assert.equal(announcement.operationPayload.customerId, 'A2OTHERHOUSEHOLD');
+  assert.equal(announcement.operationPayload.target.customerId, 'A2OTHERHOUSEHOLD');
+  assert.equal(speakNodes(DOT, 'Bonjour', CUSTOMER)[0].operationPayload.customerId, CUSTOMER);
+});

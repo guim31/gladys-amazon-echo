@@ -10,6 +10,11 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Fixed
+
+- Every command sent to an Echo (speech, announcement, volume, routine) was refused by Amazon with `HTTP 400`: the sign-in kept the account id (`amzn1.account…`) where the Alexa web API expects the customer id. Each command now names the owner of its Echo, as Alexa Media Player does. Already signed in? Nothing to redo: the right id is read again from Amazon after the update.
+- Amazon's reason for a refusal, when it gives one, now appears in the log next to the HTTP code.
+
 ## [1.0.3] - 2026-10-12
 
 ### Fixed

@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import {
+  alexaCustomerId,
   codeFromReturnAddress,
   deregisterDevice,
   deviceId,
@@ -124,7 +125,8 @@ test('registering the device gives the refresh token and the customer', async ()
   const flow = { domain: 'amazon.fr', serial: 'ABC', code_verifier: 'VERIFIER', started_at: 0 };
   const credentials = await registerDevice(amazon.fetch, flow, 'THECODE');
   assert.equal(credentials.refresh_token, 'Atnr|EXAMPLE-REFRESH-TOKEN');
-  assert.equal(credentials.customer_id, 'amzn1.account.EXAMPLEUSERID');
+  // The customer id of the Alexa web API, not the account's user id.
+  assert.equal(credentials.customer_id, 'A1EXAMPLECUSTOMER');
   assert.equal(credentials.domain, 'amazon.fr');
   assert.equal(credentials.serial, 'ABC');
   // Only what is needed is kept: no access token, no private key.
@@ -225,4 +227,11 @@ test('signing out deregisters the app device, best effort', async () => {
     japan.requests.map((r) => r.host),
     ['api.amazon.co.jp', 'api.amazon.co.jp'],
   );
+});
+
+test('only an Alexa customer id is kept, never the account id', () => {
+  assert.equal(alexaCustomerId('A1EXAMPLECUSTOMER'), 'A1EXAMPLECUSTOMER');
+  assert.equal(alexaCustomerId('amzn1.account.EXAMPLEUSERID'), null);
+  assert.equal(alexaCustomerId(''), null);
+  assert.equal(alexaCustomerId(undefined), null);
 });

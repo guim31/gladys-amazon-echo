@@ -27,7 +27,8 @@ export const CREDENTIALS = {
   domain: 'amazon.fr',
   serial: 'EXAMPLEREGISTEREDSERIAL',
   refresh_token: 'Atnr|EXAMPLE-REFRESH-TOKEN',
-  customer_id: null,
+  // What versions up to 1.0.3 stored: the account id, not the customer id.
+  customer_id: 'amzn1.account.EXAMPLEUSERID',
   registered_at: '2026-10-12T00:00:00.000Z',
 };
 

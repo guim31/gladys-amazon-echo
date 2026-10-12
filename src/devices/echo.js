@@ -139,6 +139,11 @@ export function echosOf(rawDevices, locales = new Map(), defaultLocale = 'en-US'
       hasPlayer: isGroup || capabilities.includes('MUSIC_SKILL'),
       memberSerials: isGroup && Array.isArray(raw.clusterMembers) ? raw.clusterMembers : [],
       locale: locales.get(raw.serialNumber) ?? defaultLocale,
+      // The customer the sequences must name for this device (alexa-remote2).
+      ownerCustomerId:
+        typeof raw.deviceOwnerCustomerId === 'string' && raw.deviceOwnerCustomerId
+          ? raw.deviceOwnerCustomerId
+          : null,
     });
   }
   // A group has no locale of its own: take the one of its first member.

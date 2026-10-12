@@ -20,7 +20,9 @@ test('the first call mints a session, then every call carries its cookies and cs
   const alexa = client(amazon);
   const devices = await alexa.getDevices();
   assert.equal(devices.length, 8);
+  // The account id stored by 1.0.3 and before is replaced by the customer id.
   assert.equal(alexa.customerId, 'A1EXAMPLECUSTOMER');
+  assert.equal(amazon.calls('GET', '/api/users/me').length, 1);
   await alexa.getVolumes();
   assert.equal(amazon.calls('POST', '/ap/exchangetoken/cookies').length, 1, 'one session');
   for (const request of amazon.requests.filter(
@@ -103,6 +105,12 @@ test('throttling is recognized, whatever the status Amazon uses', () => {
   );
   assert.equal(errorOf({ status: 503, text: 'ThrottlingException' }, 'x').kind, 'throttled');
   assert.equal(errorOf({ status: 400, text: 'bad' }, 'x').kind, 'http');
+  // Amazon's reason, when it gives one, says why in the logs.
+  assert.equal(
+    errorOf({ status: 400, text: '{"message":"Invalid\\n customer"}' }, 'x').message,
+    'x: HTTP 400 (Invalid customer)',
+  );
+  assert.equal(errorOf({ status: 400, text: 'bad' }, 'x').message, 'x: HTTP 400');
   assert.equal(errorOf({ status: 302, text: '' }, 'x').kind, 'session');
   assert.equal(errorOf({ status: 403, text: '' }, 'x').kind, 'session');
 });
