@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-12
+
 ### Fixed
 
 - **Connect** opened a "page not found" on amazon.fr and the other marketplaces: the sign-in now happens on the Amazon Alexa page of amazon.com (amazon.co.jp for Japan), in the language of your marketplace, as the Alexa app does. The address to paste back now starts with `https://www.amazon.com/ap/maplanding?`. The device registration and sign-out use amazon.com too; the Alexa web API stays on your marketplace.
@@ -37,6 +39,7 @@ the notes of the version's GitHub Release.
 - Configuration buttons: list the Alexa routines, test the speech, sign out.
 - English, French, German and Spanish texts.
 
-[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/guim31/gladys-amazon-echo/releases/tag/v1.0.1
