@@ -180,10 +180,10 @@
         "es": "Inicio de sesión en Amazon"
       },
       "description": {
-        "en": "1. Click Connect: Amazon's own sign-in page opens in a new tab. Sign in there (password, verification code). Gladys never sees your password.\n2. Amazon then shows a page that looks empty or broken: that is expected. Copy its whole address from the address bar (it contains /ap/maplanding).\n3. Within five minutes, paste it in the \"Finish the sign-in\" action at the bottom of this page.\nUse a computer: on a phone with the Alexa app installed, Amazon may open the app instead.",
-        "fr": "1. Cliquez sur Connecter : la page de connexion d'Amazon s'ouvre dans un nouvel onglet. Connectez-vous (mot de passe, code de vérification). Gladys ne voit jamais votre mot de passe.\n2. Amazon affiche ensuite une page qui semble vide ou cassée : c'est normal. Copiez son adresse complète dans la barre d'adresse (elle contient /ap/maplanding).\n3. Dans les cinq minutes, collez-la dans l'action « Terminer la connexion » en bas de cette page.\nUtilisez un ordinateur : sur un téléphone où l'application Alexa est installée, Amazon peut ouvrir l'application à la place.",
-        "de": "1. Klicke auf Verbinden: Die Anmeldeseite von Amazon öffnet sich in einem neuen Tab. Melde dich dort an (Passwort, Bestätigungscode). Gladys sieht dein Passwort nie.\n2. Amazon zeigt danach eine Seite, die leer oder kaputt aussieht: Das ist normal. Kopiere ihre vollständige Adresse aus der Adressleiste (sie enthält /ap/maplanding).\n3. Füge sie innerhalb von fünf Minuten in die Aktion „Anmeldung abschließen“ unten auf dieser Seite ein.\nNimm einen Computer: Auf einem Handy mit der Alexa-App öffnet Amazon eventuell die App.",
-        "es": "1. Haga clic en Conectar: la página de inicio de sesión de Amazon se abre en una pestaña nueva. Inicie sesión (contraseña, código de verificación). Gladys nunca ve su contraseña.\n2. Amazon muestra luego una página que parece vacía o rota: es normal. Copie su dirección completa de la barra de direcciones (contiene /ap/maplanding).\n3. En los cinco minutos siguientes, péguela en la acción «Terminar el inicio de sesión» al final de esta página.\nUse un ordenador: en un teléfono con la aplicación Alexa, Amazon puede abrir la aplicación."
+        "en": "1. Click Connect: Amazon's own sign-in page opens in a new tab. It is the Amazon Alexa page on amazon.com, even for an amazon.fr or amazon.de account: that is expected. Sign in there (password, verification code). Gladys never sees your password.\n2. Amazon then shows a page that looks empty or broken: that is expected. Copy its whole address from the address bar (it starts with https://www.amazon.com/ap/maplanding).\n3. Within five minutes, paste it in the \"Finish the sign-in\" action at the bottom of this page.\nUse a computer: on a phone with the Alexa app installed, Amazon may open the app instead.",
+        "fr": "1. Cliquez sur Connecter : la page de connexion d'Amazon s'ouvre dans un nouvel onglet. C'est celle d'Amazon Alexa sur amazon.com, même pour un compte amazon.fr : c'est normal. Connectez-vous (mot de passe, code de vérification). Gladys ne voit jamais votre mot de passe.\n2. Amazon affiche ensuite une page qui semble vide ou cassée : c'est normal. Copiez son adresse complète dans la barre d'adresse (elle commence par https://www.amazon.com/ap/maplanding).\n3. Dans les cinq minutes, collez-la dans l'action « Terminer la connexion » en bas de cette page.\nUtilisez un ordinateur : sur un téléphone où l'application Alexa est installée, Amazon peut ouvrir l'application à la place.",
+        "de": "1. Klicke auf Verbinden: Die Anmeldeseite von Amazon öffnet sich in einem neuen Tab. Es ist die Seite von Amazon Alexa auf amazon.com, auch für ein Konto bei amazon.de: Das ist normal. Melde dich dort an (Passwort, Bestätigungscode). Gladys sieht dein Passwort nie.\n2. Amazon zeigt danach eine Seite, die leer oder kaputt aussieht: Das ist normal. Kopiere ihre vollständige Adresse aus der Adressleiste (sie beginnt mit https://www.amazon.com/ap/maplanding).\n3. Füge sie innerhalb von fünf Minuten in die Aktion „Anmeldung abschließen“ unten auf dieser Seite ein.\nNimm einen Computer: Auf einem Handy mit der Alexa-App öffnet Amazon eventuell die App.",
+        "es": "1. Haga clic en Conectar: la página de inicio de sesión de Amazon se abre en una pestaña nueva. Es la de Amazon Alexa en amazon.com, incluso para una cuenta de amazon.es: es normal. Inicie sesión (contraseña, código de verificación). Gladys nunca ve su contraseña.\n2. Amazon muestra luego una página que parece vacía o rota: es normal. Copie su dirección completa de la barra de direcciones (empieza por https://www.amazon.com/ap/maplanding).\n3. En los cinco minutos siguientes, péguela en la acción «Terminar el inicio de sesión» al final de esta página.\nUse un ordenador: en un teléfono con la aplicación Alexa, Amazon puede abrir la aplicación."
       }
     },
     {
@@ -336,10 +336,10 @@
             "es": "Dirección de la página de Amazon"
           },
           "placeholder": {
-            "en": "https://www.amazon.fr/ap/maplanding?…",
-            "fr": "https://www.amazon.fr/ap/maplanding?…",
-            "de": "https://www.amazon.de/ap/maplanding?…",
-            "es": "https://www.amazon.es/ap/maplanding?…"
+            "en": "https://www.amazon.com/ap/maplanding?…",
+            "fr": "https://www.amazon.com/ap/maplanding?…",
+            "de": "https://www.amazon.com/ap/maplanding?…",
+            "es": "https://www.amazon.com/ap/maplanding?…"
           },
           "required": true
         }

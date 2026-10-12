@@ -131,10 +131,10 @@ export const MESSAGES = {
       es: 'Esta no es la dirección de retorno: después de iniciar sesión, Amazon muestra una página cuya dirección contiene «/ap/maplanding». Copie esa.',
     },
     other_marketplace: {
-      en: 'This address belongs to another Amazon marketplace than the one of the configuration. Click "Connect" again.',
-      fr: 'Cette adresse appartient à un autre site Amazon que celui de la configuration. Cliquez à nouveau sur « Connecter ».',
-      de: 'Diese Adresse gehört zu einem anderen Amazon-Marktplatz als dem der Konfiguration. Klicke erneut auf „Verbinden“.',
-      es: 'Esta dirección pertenece a otro sitio de Amazon distinto al de la configuración. Vuelva a hacer clic en «Conectar».',
+      en: 'This address does not come from the sign-in page Gladys opened (on www.amazon.com, www.amazon.co.jp for Japan). Click "Connect" again.',
+      fr: 'Cette adresse ne vient pas de la page de connexion ouverte par Gladys (sur www.amazon.com, www.amazon.co.jp au Japon). Cliquez à nouveau sur « Connecter ».',
+      de: 'Diese Adresse kommt nicht von der Anmeldeseite, die Gladys geöffnet hat (auf www.amazon.com, www.amazon.co.jp für Japan). Klicke erneut auf „Verbinden“.',
+      es: 'Esta dirección no viene de la página de inicio de sesión que abrió Gladys (en www.amazon.com, www.amazon.co.jp para Japón). Vuelva a hacer clic en «Conectar».',
     },
     no_code: {
       en: 'This address has no authorization code: copy it again, whole, right after signing in.',

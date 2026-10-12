@@ -9,6 +9,7 @@
 // -----------------------------------------------------------------------------
 
 import { readFileSync } from 'node:fs';
+import { signInBase } from '../../src/regions.js';
 
 export function fixture(name) {
   return JSON.parse(
@@ -29,12 +30,15 @@ export function createFakeAmazon({ domain = 'amazon.fr', players = {} } = {}) {
     },
   };
 
+  // The token endpoints are on amazon.com (amazon.co.jp for Japan), the rest
+  // on the marketplace.
+  const base = signInBase(domain);
   const routes = {
-    [`POST api.${domain} /auth/register`]: () => ({ body: fixture('auth-register') }),
-    [`POST api.${domain} /auth/token`]: () => ({
+    [`POST api.${base} /auth/register`]: () => ({ body: fixture('auth-register') }),
+    [`POST api.${base} /auth/token`]: () => ({
       body: { access_token: 'Atna|EXAMPLE-ACCESS-TOKEN', expires_in: 3600 },
     }),
-    [`POST api.${domain} /auth/deregister`]: () => ({ body: { response: { success: {} } } }),
+    [`POST api.${base} /auth/deregister`]: () => ({ body: { response: { success: {} } } }),
     [`POST www.${domain} /ap/exchangetoken/cookies`]: () => ({
       body: fixture('exchange-cookies'),
     }),

@@ -25,12 +25,15 @@ You do this once. Gladys never sees your password: you sign in on Amazon's own p
 1. Open **Integrations → Echo Media Player → Configuration**.
 2. Choose your **Amazon marketplace** (the site of your account: amazon.fr, amazon.de…) and click
    **Save**.
-3. Click **Connect**. Amazon's sign-in page opens in a new tab.
+3. Click **Connect**. Amazon's sign-in page opens in a new tab. It is the **Amazon Alexa page on
+   amazon.com**, even for an amazon.fr or amazon.de account, and that is expected: the Alexa app
+   always signs in there, then Gladys uses your marketplace. The page speaks the language of your
+   marketplace. (For Japan, it is amazon.co.jp.)
 4. Sign in: email, password, and the verification code if two-step verification is on.
 5. Amazon then shows a page that looks **empty, broken or "page not found"**. That is expected: the
    address of this page carries the authorization.
 6. Click the address bar and copy the **whole address**. It starts with
-   `https://www.amazon.fr/ap/maplanding?` (with your marketplace) and is long.
+   `https://www.amazon.com/ap/maplanding?` (even for an amazon.fr account) and is long.
 7. Back in Gladys, at the bottom of the Configuration tab, paste it in **Finish the sign-in** and run
    the action, **within a few minutes** (the code expires quickly and works once).
 8. The answer says how many Echos were found. The status at the top turns to connected.
@@ -44,8 +47,9 @@ account.
 
 - _"This is not the return address"_: you copied the address too early (or the sign-in page itself).
   Finish signing in, then copy the address of the page that follows.
-- _"This address belongs to another Amazon marketplace"_: the marketplace of the configuration is
-  not the one of the page. Choose the right one, save, click **Connect** again.
+- _"This address does not come from the sign-in page Gladys opened"_: the pasted address does not
+  start with `https://www.amazon.com/ap/maplanding?` (an amazon.fr page opened by hand, for
+  instance). Click **Connect** again and copy the address of the page that follows the sign-in.
 - _"Amazon refused the sign-in"_: the code was already used or too old. Click **Connect** and start
   again, a bit faster.
 - _"Amazon refused the stored sign-in"_ (later on): the registration was removed from your account,

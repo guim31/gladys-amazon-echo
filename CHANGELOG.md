@@ -10,6 +10,10 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Connect** opened a "page not found" on amazon.fr and the other marketplaces: the sign-in now happens on the Amazon Alexa page of amazon.com (amazon.co.jp for Japan), in the language of your marketplace, as the Alexa app does. The address to paste back now starts with `https://www.amazon.com/ap/maplanding?`. The device registration and sign-out use amazon.com too; the Alexa web API stays on your marketplace.
+
 ## [1.0.2] - 2026-10-12
 
 ### Changed

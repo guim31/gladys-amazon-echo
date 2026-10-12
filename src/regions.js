@@ -1,11 +1,14 @@
 // -----------------------------------------------------------------------------
 // Amazon marketplaces.
 //
-// The account lives on one marketplace (amazon.fr, amazon.de…): the sign-in
-// page, the token endpoints and the Alexa web API are all on that domain. The
-// list is closed on purpose: the domain is interpolated into every URL that
-// carries the authorization code and the refresh token, so a typo must never
-// send them to another host.
+// The account lives on one marketplace (amazon.fr, amazon.de…): the cookie
+// exchange and the Alexa web API are on that domain. The sign-in page and the
+// token endpoints are not: as in alexa-cookie2 (`baseAmazonPage`), they live on
+// amazon.com for every marketplace but Japan, which has its own. amazon.fr's
+// own /ap/signin answers "page not found" to the Alexa app. The list is closed
+// on purpose: the domain is interpolated into every URL that carries the
+// authorization code and the refresh token, so a typo must never send them to
+// another host.
 // -----------------------------------------------------------------------------
 
 // domain -> locale of the speech when the Echo does not report its own.
@@ -33,4 +36,9 @@ export function isRegion(domain) {
 /** Locale of the sign-in page (`fr_FR`), from the marketplace. */
 export function signInLanguage(domain) {
   return (REGIONS[domain] ?? 'en-US').replace('-', '_');
+}
+
+/** Domain of the sign-in page and the token endpoints (alexa-cookie2's `baseAmazonPage`). */
+export function signInBase(domain) {
+  return domain === 'amazon.co.jp' ? 'amazon.co.jp' : 'amazon.com';
 }
