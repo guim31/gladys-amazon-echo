@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-12
+
 ### Changed
 
 - Renamed to **Echo Media Player**, with a new cover (Gladys → Echo → sound) and descriptions that say the direction, so it is not mistaken for the Gladys "Amazon Alexa" integration (voice control of Gladys).
@@ -31,5 +33,6 @@ the notes of the version's GitHub Release.
 - Configuration buttons: list the Alexa routines, test the speech, sign out.
 - English, French, German and Spanish texts.
 
-[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/guim31/gladys-amazon-echo/releases/tag/v1.0.1
