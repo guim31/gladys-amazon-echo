@@ -1,176 +1,677 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Amazon Echo",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Make your Echos speak in your scenes, run Alexa routines, control music and volume.",
+    "fr": "Faites parler vos Echo dans vos scènes, lancez des routines Alexa, pilotez musique et volume.",
+    "de": "Lass deine Echos in Szenen sprechen, starte Alexa-Routinen, steuere Musik und Lautstärke.",
+    "es": "Haga hablar a sus Echo en escenas, lance rutinas de Alexa, controle música y volumen."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-amazon-echo:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-amazon-echo/main/cover.png",
+  "categories": ["multimedia", "notifications", "assistants"],
+  "transports": ["cloud"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Before you start",
+        "fr": "Avant de commencer",
+        "de": "Bevor du anfängst",
+        "es": "Antes de empezar"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "This integration uses the web API of the Alexa app, which Amazon does not document: it may stop working when Amazon changes it. It is not affiliated with Amazon. Developed without the hardware: feedback welcome.",
+        "fr": "Cette intégration utilise l'API web de l'application Alexa, qu'Amazon ne documente pas : elle peut cesser de fonctionner quand Amazon la modifie. Elle n'est pas affiliée à Amazon. Développée sans le matériel : retours bienvenus.",
+        "de": "Diese Integration nutzt die Web-API der Alexa-App, die Amazon nicht dokumentiert: Ändert Amazon sie, kann die Integration ausfallen. Nicht mit Amazon verbunden. Ohne die Hardware entwickelt: Rückmeldungen willkommen.",
+        "es": "Esta integración usa la API web de la aplicación Alexa, que Amazon no documenta: puede dejar de funcionar cuando Amazon la cambie. No está afiliada a Amazon. Desarrollada sin el hardware: se agradecen sus comentarios."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/guim31/gladys-amazon-echo/blob/main/docs/en.md",
+          "label": {
+            "en": "Step-by-step guide",
+            "fr": "Guide pas à pas",
+            "de": "Schritt-für-Schritt-Anleitung",
+            "es": "Guía paso a paso"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
-    },
-    {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
+      "key": "region",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
-      "required": false,
-      "default": "celsius",
+      "label": {
+        "en": "Amazon marketplace",
+        "fr": "Site Amazon",
+        "de": "Amazon-Marktplatz",
+        "es": "Sitio de Amazon"
+      },
+      "description": {
+        "en": "The site where your Amazon account lives (the one of the Alexa app). Save before clicking Connect.",
+        "fr": "Le site où vit votre compte Amazon (celui de l'application Alexa). Enregistrez avant de cliquer sur Connecter.",
+        "de": "Die Seite, auf der dein Amazon-Konto liegt (die der Alexa-App). Speichere, bevor du auf Verbinden klickst.",
+        "es": "El sitio donde está su cuenta de Amazon (el de la aplicación Alexa). Guarde antes de hacer clic en Conectar."
+      },
+      "required": true,
+      "default": "amazon.fr",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "amazon.fr",
+          "label": {
+            "en": "France (amazon.fr)",
+            "fr": "France (amazon.fr)",
+            "de": "Frankreich (amazon.fr)",
+            "es": "Francia (amazon.fr)"
+          }
+        },
+        {
+          "value": "amazon.de",
+          "label": {
+            "en": "Germany (amazon.de)",
+            "fr": "Allemagne (amazon.de)",
+            "de": "Deutschland (amazon.de)",
+            "es": "Alemania (amazon.de)"
+          }
+        },
+        {
+          "value": "amazon.co.uk",
+          "label": {
+            "en": "United Kingdom (amazon.co.uk)",
+            "fr": "Royaume-Uni (amazon.co.uk)",
+            "de": "Vereinigtes Königreich (amazon.co.uk)",
+            "es": "Reino Unido (amazon.co.uk)"
+          }
+        },
+        {
+          "value": "amazon.com",
+          "label": {
+            "en": "United States (amazon.com)",
+            "fr": "États-Unis (amazon.com)",
+            "de": "USA (amazon.com)",
+            "es": "Estados Unidos (amazon.com)"
+          }
+        },
+        {
+          "value": "amazon.es",
+          "label": {
+            "en": "Spain (amazon.es)",
+            "fr": "Espagne (amazon.es)",
+            "de": "Spanien (amazon.es)",
+            "es": "España (amazon.es)"
+          }
+        },
+        {
+          "value": "amazon.it",
+          "label": {
+            "en": "Italy (amazon.it)",
+            "fr": "Italie (amazon.it)",
+            "de": "Italien (amazon.it)",
+            "es": "Italia (amazon.it)"
+          }
+        },
+        {
+          "value": "amazon.ca",
+          "label": {
+            "en": "Canada (amazon.ca)",
+            "fr": "Canada (amazon.ca)",
+            "de": "Kanada (amazon.ca)",
+            "es": "Canadá (amazon.ca)"
+          }
+        },
+        {
+          "value": "amazon.com.au",
+          "label": {
+            "en": "Australia (amazon.com.au)",
+            "fr": "Australie (amazon.com.au)",
+            "de": "Australien (amazon.com.au)",
+            "es": "Australia (amazon.com.au)"
+          }
+        },
+        {
+          "value": "amazon.in",
+          "label": {
+            "en": "India (amazon.in)",
+            "fr": "Inde (amazon.in)",
+            "de": "Indien (amazon.in)",
+            "es": "India (amazon.in)"
+          }
+        },
+        {
+          "value": "amazon.com.mx",
+          "label": {
+            "en": "Mexico (amazon.com.mx)",
+            "fr": "Mexique (amazon.com.mx)",
+            "de": "Mexiko (amazon.com.mx)",
+            "es": "México (amazon.com.mx)"
+          }
+        },
+        {
+          "value": "amazon.com.br",
+          "label": {
+            "en": "Brazil (amazon.com.br)",
+            "fr": "Brésil (amazon.com.br)",
+            "de": "Brasilien (amazon.com.br)",
+            "es": "Brasil (amazon.com.br)"
+          }
+        },
+        {
+          "value": "amazon.co.jp",
+          "label": {
+            "en": "Japan (amazon.co.jp)",
+            "fr": "Japon (amazon.co.jp)",
+            "de": "Japan (amazon.co.jp)",
+            "es": "Japón (amazon.co.jp)"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "sign_in",
+      "type": "section",
+      "label": {
+        "en": "Sign in to Amazon",
+        "fr": "Connexion à Amazon",
+        "de": "Bei Amazon anmelden",
+        "es": "Inicio de sesión en Amazon"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds.",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes."
+        "en": "1. Click Connect: Amazon's own sign-in page opens in a new tab. Sign in there (password, verification code). Gladys never sees your password.\n2. Amazon then shows a page that looks empty or broken: that is expected. Copy its whole address from the address bar (it contains /ap/maplanding).\n3. Within five minutes, paste it in the \"Finish the sign-in\" action at the bottom of this page.\nUse a computer: on a phone with the Alexa app installed, Amazon may open the app instead.",
+        "fr": "1. Cliquez sur Connecter : la page de connexion d'Amazon s'ouvre dans un nouvel onglet. Connectez-vous (mot de passe, code de vérification). Gladys ne voit jamais votre mot de passe.\n2. Amazon affiche ensuite une page qui semble vide ou cassée : c'est normal. Copiez son adresse complète dans la barre d'adresse (elle contient /ap/maplanding).\n3. Dans les cinq minutes, collez-la dans l'action « Terminer la connexion » en bas de cette page.\nUtilisez un ordinateur : sur un téléphone où l'application Alexa est installée, Amazon peut ouvrir l'application à la place.",
+        "de": "1. Klicke auf Verbinden: Die Anmeldeseite von Amazon öffnet sich in einem neuen Tab. Melde dich dort an (Passwort, Bestätigungscode). Gladys sieht dein Passwort nie.\n2. Amazon zeigt danach eine Seite, die leer oder kaputt aussieht: Das ist normal. Kopiere ihre vollständige Adresse aus der Adressleiste (sie enthält /ap/maplanding).\n3. Füge sie innerhalb von fünf Minuten in die Aktion „Anmeldung abschließen“ unten auf dieser Seite ein.\nNimm einen Computer: Auf einem Handy mit der Alexa-App öffnet Amazon eventuell die App.",
+        "es": "1. Haga clic en Conectar: la página de inicio de sesión de Amazon se abre en una pestaña nueva. Inicie sesión (contraseña, código de verificación). Gladys nunca ve su contraseña.\n2. Amazon muestra luego una página que parece vacía o rota: es normal. Copie su dirección completa de la barra de direcciones (contiene /ap/maplanding).\n3. En los cinco minutos siguientes, péguela en la acción «Terminar el inicio de sesión» al final de esta página.\nUse un ordenador: en un teléfono con la aplicación Alexa, Amazon puede abrir la aplicación."
+      }
+    },
+    {
+      "key": "amazon_account",
+      "type": "account_link",
+      "label": {
+        "en": "Amazon account",
+        "fr": "Compte Amazon",
+        "de": "Amazon-Konto",
+        "es": "Cuenta de Amazon"
+      }
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of names and messages",
+        "fr": "Langue des noms et des messages",
+        "de": "Sprache der Namen und Meldungen",
+        "es": "Idioma de los nombres y mensajes"
+      },
+      "description": {
+        "en": "Names of the features of the Echos added from now on (Gladys keeps them once a device is added), and error messages of commands and scenes.",
+        "fr": "Noms des fonctionnalités des Echo ajoutés désormais (Gladys les garde une fois l'appareil ajouté), et messages d'erreur des commandes et des scènes.",
+        "de": "Namen der Funktionen der ab jetzt hinzugefügten Echos (Gladys behält sie, sobald ein Gerät hinzugefügt ist) und Fehlermeldungen von Befehlen und Szenen.",
+        "es": "Nombres de las funciones de los Echo añadidos a partir de ahora (Gladys los conserva una vez añadido el dispositivo) y mensajes de error de comandos y escenas."
       },
       "required": false,
-      "default": 300,
-      "min": 30,
-      "max": 3600
+      "default": "en",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
+    },
+    {
+      "key": "refresh_interval",
+      "type": "select",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Intervalle de rafraîchissement",
+        "de": "Aktualisierungsintervall",
+        "es": "Intervalo de actualización"
+      },
+      "description": {
+        "en": "How often the volume, the music and Do Not Disturb are read. Amazon blocks accounts that call it too often: keep it slow.",
+        "fr": "Fréquence de lecture du volume, de la musique et du mode Ne pas déranger. Amazon bloque les comptes trop bavards : restez raisonnable.",
+        "de": "Wie oft Lautstärke, Musik und „Nicht stören“ gelesen werden. Amazon sperrt Konten, die zu oft anfragen: Bleib gemächlich.",
+        "es": "Frecuencia de lectura del volumen, la música y el modo No molestar. Amazon bloquea las cuentas que llaman demasiado: manténgalo lento."
+      },
+      "required": false,
+      "default": "120",
+      "options": [
+        {
+          "value": "60",
+          "label": {
+            "en": "1 minute",
+            "fr": "1 minute",
+            "de": "1 Minute",
+            "es": "1 minuto"
+          }
+        },
+        {
+          "value": "120",
+          "label": {
+            "en": "2 minutes",
+            "fr": "2 minutes",
+            "de": "2 Minuten",
+            "es": "2 minutos"
+          }
+        },
+        {
+          "value": "300",
+          "label": {
+            "en": "5 minutes",
+            "fr": "5 minutes",
+            "de": "5 Minuten",
+            "es": "5 minutos"
+          }
+        },
+        {
+          "value": "600",
+          "label": {
+            "en": "10 minutes",
+            "fr": "10 minutes",
+            "de": "10 Minuten",
+            "es": "10 minutos"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
-      "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
+      "key": "finish_sign_in",
+      "label": {
+        "en": "Finish the sign-in",
+        "fr": "Terminer la connexion",
+        "de": "Anmeldung abschließen",
+        "es": "Terminar el inicio de sesión"
+      },
+      "description": {
+        "en": "Paste the address of the page Amazon showed after you signed in.",
+        "fr": "Collez l'adresse de la page affichée par Amazon après votre connexion.",
+        "de": "Füge die Adresse der Seite ein, die Amazon nach deiner Anmeldung gezeigt hat.",
+        "es": "Pegue la dirección de la página que Amazon mostró después de iniciar sesión."
+      },
+      "timeout_seconds": 60,
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
+          "key": "return_address",
+          "type": "string",
+          "label": {
+            "en": "Address of the Amazon page",
+            "fr": "Adresse de la page Amazon",
+            "de": "Adresse der Amazon-Seite",
+            "es": "Dirección de la página de Amazon"
+          },
+          "placeholder": {
+            "en": "https://www.amazon.fr/ap/maplanding?…",
+            "fr": "https://www.amazon.fr/ap/maplanding?…",
+            "de": "https://www.amazon.de/ap/maplanding?…",
+            "es": "https://www.amazon.es/ap/maplanding?…"
+          },
           "required": true
         }
       ]
-    }
-  ],
-  "scene_triggers": [
+    },
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
-      "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+      "key": "list_routines",
+      "label": {
+        "en": "List my Alexa routines",
+        "fr": "Lister mes routines Alexa",
+        "de": "Meine Alexa-Routinen auflisten",
+        "es": "Listar mis rutinas de Alexa"
       },
+      "description": {
+        "en": "Shows the names to type in the \"Run an Alexa routine\" scene action.",
+        "fr": "Affiche les noms à saisir dans l'action de scène « Lancer une routine Alexa ».",
+        "de": "Zeigt die Namen, die du in der Szenenaktion „Alexa-Routine starten“ eingibst.",
+        "es": "Muestra los nombres que debe escribir en la acción de escena «Ejecutar una rutina de Alexa»."
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "test_speak",
+      "label": {
+        "en": "Test: make an Echo speak",
+        "fr": "Tester : faire parler un Echo",
+        "de": "Test: einen Echo sprechen lassen",
+        "es": "Probar: hacer hablar a un Echo"
+      },
+      "timeout_seconds": 30,
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "label": {
+            "en": "Echo",
+            "fr": "Echo",
+            "de": "Echo",
+            "es": "Echo"
+          },
+          "required": true
         },
         {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
-        }
-      ],
-      "variables": [
-        {
-          "key": "target",
+          "key": "text",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Text",
+            "fr": "Texte",
+            "de": "Text",
+            "es": "Texto"
+          },
+          "placeholder": {
+            "en": "Hello from Gladys",
+            "fr": "Bonjour de la part de Gladys",
+            "de": "Hallo von Gladys",
+            "es": "Hola de parte de Gladys"
+          },
+          "required": true
         }
       ]
+    },
+    {
+      "key": "sign_out",
+      "label": {
+        "en": "Sign out of Amazon",
+        "fr": "Se déconnecter d'Amazon",
+        "de": "Von Amazon abmelden",
+        "es": "Cerrar sesión en Amazon"
+      },
+      "description": {
+        "en": "Deletes the credentials stored by Gladys and removes Gladys from the devices of your Amazon account.",
+        "fr": "Supprime les identifiants enregistrés par Gladys et retire Gladys des appareils de votre compte Amazon.",
+        "de": "Löscht die von Gladys gespeicherten Zugangsdaten und entfernt Gladys aus den Geräten deines Amazon-Kontos.",
+        "es": "Elimina las credenciales guardadas por Gladys y quita Gladys de los dispositivos de su cuenta de Amazon."
+      },
+      "timeout_seconds": 30
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "speak",
+      "label": {
+        "en": "Make an Echo speak",
+        "fr": "Faire parler un Echo",
+        "de": "Einen Echo sprechen lassen",
+        "es": "Hacer hablar a un Echo"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Says a text on one or more Echos, as speech or as an announcement with a chime.",
+        "fr": "Dit un texte sur un ou plusieurs Echo, en parole simple ou en annonce avec carillon.",
+        "de": "Sagt einen Text auf einem oder mehreren Echos, gesprochen oder als Durchsage mit Gong.",
+        "es": "Dice un texto en uno o varios Echo, como voz o como anuncio con campanilla."
+      },
+      "timeout_seconds": 30,
       "fields": [
+        {
+          "key": "devices",
+          "type": "multi_select",
+          "source": "devices",
+          "label": {
+            "en": "Echos",
+            "fr": "Echo",
+            "de": "Echos",
+            "es": "Echo"
+          },
+          "required": true
+        },
+        {
+          "key": "text",
+          "type": "string",
+          "label": {
+            "en": "Text to say",
+            "fr": "Texte à dire",
+            "de": "Zu sprechender Text",
+            "es": "Texto que decir"
+          },
+          "placeholder": {
+            "en": "The washing machine is done",
+            "fr": "La machine à laver a terminé",
+            "de": "Die Waschmaschine ist fertig",
+            "es": "La lavadora ha terminado"
+          },
+          "required": true
+        },
+        {
+          "key": "mode",
+          "type": "select",
+          "label": {
+            "en": "How",
+            "fr": "Comment",
+            "de": "Wie",
+            "es": "Cómo"
+          },
+          "required": true,
+          "default": "speak",
+          "display": "radio",
+          "options": [
+            {
+              "value": "speak",
+              "label": {
+                "en": "Speak",
+                "fr": "Parler",
+                "de": "Sprechen",
+                "es": "Hablar"
+              }
+            },
+            {
+              "value": "announce",
+              "label": {
+                "en": "Announcement (with a chime)",
+                "fr": "Annonce (avec carillon)",
+                "de": "Durchsage (mit Gong)",
+                "es": "Anuncio (con campanilla)"
+              }
+            }
+          ]
+        },
+        {
+          "key": "volume",
+          "type": "number",
+          "label": {
+            "en": "Volume (optional, 0 to 100)",
+            "fr": "Volume (facultatif, 0 à 100)",
+            "de": "Lautstärke (optional, 0 bis 100)",
+            "es": "Volumen (opcional, 0 a 100)"
+          },
+          "description": {
+            "en": "Set before speaking, then the previous volume comes back.",
+            "fr": "Réglé avant de parler, puis le volume précédent revient.",
+            "de": "Wird vor dem Sprechen gesetzt, danach kommt die vorherige Lautstärke zurück.",
+            "es": "Se ajusta antes de hablar y después vuelve el volumen anterior."
+          },
+          "required": false,
+          "min": 0,
+          "max": 100
+        }
+      ]
+    },
+    {
+      "key": "run_routine",
+      "label": {
+        "en": "Run an Alexa routine",
+        "fr": "Lancer une routine Alexa",
+        "de": "Alexa-Routine starten",
+        "es": "Ejecutar una rutina de Alexa"
+      },
+      "description": {
+        "en": "Runs a routine of the Alexa app, found by its name or by its spoken phrase.",
+        "fr": "Lance une routine de l'application Alexa, trouvée par son nom ou par sa phrase.",
+        "de": "Startet eine Routine der Alexa-App, gefunden über ihren Namen oder ihren Sprachbefehl.",
+        "es": "Ejecuta una rutina de la aplicación Alexa, encontrada por su nombre o su frase."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "routine",
+          "type": "string",
+          "label": {
+            "en": "Routine name",
+            "fr": "Nom de la routine",
+            "de": "Name der Routine",
+            "es": "Nombre de la rutina"
+          },
+          "description": {
+            "en": "As in the Alexa app. The \"List my Alexa routines\" button of the configuration shows them.",
+            "fr": "Comme dans l'application Alexa. Le bouton « Lister mes routines Alexa » de la configuration les affiche.",
+            "de": "Wie in der Alexa-App. Die Schaltfläche „Meine Alexa-Routinen auflisten“ in der Konfiguration zeigt sie.",
+            "es": "Como en la aplicación Alexa. El botón «Listar mis rutinas de Alexa» de la configuración las muestra."
+          },
+          "placeholder": {
+            "en": "Good night",
+            "fr": "Bonne nuit",
+            "de": "Gute Nacht",
+            "es": "Buenas noches"
+          },
+          "required": true
+        },
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "label": {
+            "en": "Echo that runs it (optional)",
+            "fr": "Echo qui l'exécute (facultatif)",
+            "de": "Ausführender Echo (optional)",
+            "es": "Echo que la ejecuta (opcional)"
+          },
+          "description": {
+            "en": "For the steps of the routine that act on \"the device you speak to\".",
+            "fr": "Pour les étapes de la routine qui agissent sur « l'appareil auquel vous parlez ».",
+            "de": "Für die Schritte der Routine, die auf „das Gerät, mit dem du sprichst“ wirken.",
+            "es": "Para los pasos de la rutina que actúan sobre «el dispositivo con el que habla»."
+          },
+          "required": false
         }
-      ],
-      "outputs": [
+      ]
+    },
+    {
+      "key": "do_not_disturb",
+      "label": {
+        "en": "Echo: Do Not Disturb",
+        "fr": "Echo : Ne pas déranger",
+        "de": "Echo: Nicht stören",
+        "es": "Echo: No molestar"
+      },
+      "description": {
+        "en": "Turns Do Not Disturb on or off on one or more Echos.",
+        "fr": "Active ou désactive Ne pas déranger sur un ou plusieurs Echo.",
+        "de": "Schaltet „Nicht stören“ auf einem oder mehreren Echos ein oder aus.",
+        "es": "Activa o desactiva No molestar en uno o varios Echo."
+      },
+      "timeout_seconds": 30,
+      "fields": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "devices",
+          "type": "multi_select",
+          "source": "devices",
+          "label": {
+            "en": "Echos",
+            "fr": "Echo",
+            "de": "Echos",
+            "es": "Echo"
+          },
+          "required": true
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "Do Not Disturb",
+            "fr": "Ne pas déranger",
+            "de": "Nicht stören",
+            "es": "No molestar"
+          },
+          "required": true,
+          "default": "on",
+          "display": "radio",
+          "options": [
+            {
+              "value": "on",
+              "label": {
+                "en": "On",
+                "fr": "Activé",
+                "de": "An",
+                "es": "Activado"
+              }
+            },
+            {
+              "value": "off",
+              "label": {
+                "en": "Off",
+                "fr": "Désactivé",
+                "de": "Aus",
+                "es": "Desactivado"
+              }
+            }
+          ]
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "player",
+      "label": {
+        "en": "Echo player",
+        "fr": "Lecteur Echo",
+        "de": "Echo-Player",
+        "es": "Reproductor Echo"
       },
-      "icon": "activity",
+      "description": {
+        "en": "What an Echo plays, its volume and the previous / play / next buttons.",
+        "fr": "Ce que joue un Echo, son volume et les boutons précédent / lecture / suivant.",
+        "de": "Was ein Echo spielt, seine Lautstärke und die Tasten Zurück / Wiedergabe / Weiter.",
+        "es": "Lo que reproduce un Echo, su volumen y los botones anterior / reproducir / siguiente."
+      },
+      "icon": "speaker",
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Echo",
+            "fr": "Echo",
+            "de": "Echo",
+            "es": "Echo"
+          },
+          "required": true
+        }
+      ],
       "action_timeout_seconds": 15
     }
   ]

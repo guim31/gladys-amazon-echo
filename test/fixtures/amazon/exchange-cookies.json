@@ -1,0 +1,43 @@
+{
+  "response": {
+    "tokens": {
+      "cookies": {
+        ".amazon.fr": [
+          {
+            "Name": "session-id",
+            "Value": "000-0000000-0000000",
+            "Path": "/",
+            "Secure": true,
+            "HttpOnly": false,
+            "Expires": "12 Oct 2027 00:00:00 GMT"
+          },
+          {
+            "Name": "ubid-acbfr",
+            "Value": "000-0000000-0000000",
+            "Path": "/",
+            "Secure": true,
+            "HttpOnly": false,
+            "Expires": "12 Oct 2027 00:00:00 GMT"
+          },
+          {
+            "Name": "at-acbfr",
+            "Value": "\"Atza|EXAMPLE-SESSION-COOKIE\"",
+            "Path": "/",
+            "Secure": true,
+            "HttpOnly": true,
+            "Expires": "12 Oct 2027 00:00:00 GMT"
+          },
+          {
+            "Name": "sess-at-acbfr",
+            "Value": "\"EXAMPLE-SESS-COOKIE\"",
+            "Path": "/",
+            "Secure": true,
+            "HttpOnly": true,
+            "Expires": "12 Oct 2027 00:00:00 GMT"
+          }
+        ]
+      }
+    },
+    "request_id": "00000000-0000-0000-0000-000000000000"
+  }
+}

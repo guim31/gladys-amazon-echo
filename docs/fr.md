@@ -1,65 +1,117 @@
-# Template de démonstration
+# Amazon Echo
 
-Ceci est la documentation utilisateur de l'intégration. Gladys ré-héberge ce
-fichier et affiche un lien **Documentation** permanent vers lui dans l'écran
-de configuration (dans la langue de l'utilisateur, avec l'anglais en repli) —
-c'est au moment de configurer que l'utilisateur en a le plus besoin. Gardez
-les courtes indications d'accueil dans les blocs `section` du `config_schema`
-du manifest ; mettez ici le pas-à-pas détaillé (captures d'écran, dépannage…).
+Faites parler vos Echo dans vos scènes, lancez vos routines Alexa, et pilotez musique, volume et
+mode Ne pas déranger depuis Gladys.
 
-## Ce que vous obtenez
+> **Non officielle et non affiliée à Amazon.** Cette intégration utilise l'API web de l'application
+> Alexa, qu'Amazon ne documente pas : elle peut cesser de fonctionner quand Amazon la modifie.
+>
+> **Développée sans le matériel : retours bienvenus.** Dites-nous sur le forum de Gladys ce qui
+> marche avec vos Echo et ce qui ne marche pas.
 
-Six appareils de démonstration apparaissent après l'installation : une
-station météo (vraies données Open-Meteo), un interrupteur, une lampe
-variable, une prise connectée avec mesure de puissance, un détecteur de
-mouvement et une caméra.
+## Avant de commencer
 
-## Configuration
+- Gladys 5.1.0 ou plus récent.
+- Votre compte Amazon, avec vos Echo installés dans l'application Alexa.
+- Un **ordinateur** pour la connexion : sur un téléphone où l'application Alexa est installée,
+  Amazon peut ouvrir l'application au lieu de la page de connexion.
 
-1. Ouvrez l'onglet **Configuration** de l'intégration.
-2. Renseignez la **latitude** et la **longitude** que la station météo de
-   démonstration doit observer (Paris par défaut), et choisissez votre unité
-   de température.
-3. Enregistrez : les appareils apparaissent dans l'onglet **Découverte**,
-   prêts à être ajoutés.
+## Se connecter à Amazon
 
-Le réglage **Préférer la connexion locale** pilote la prise de
-démonstration : elle affiche en badge le canal réellement utilisé (local ou
-cloud), avec un point orange quand elle fonctionne en mode dégradé (local
-refusé, bascule cloud).
+Une seule fois. Gladys ne voit jamais votre mot de passe : vous vous connectez sur la page d'Amazon
+elle-même.
 
-## Actions
+1. Ouvrez **Intégrations → Amazon Echo → Configuration**.
+2. Choisissez votre **site Amazon** (celui de votre compte : amazon.fr, amazon.de…) et cliquez sur
+   **Enregistrer**.
+3. Cliquez sur **Connecter**. La page de connexion d'Amazon s'ouvre dans un nouvel onglet.
+4. Connectez-vous : e-mail, mot de passe, et le code de vérification si la validation en deux
+   étapes est active.
+5. Amazon affiche ensuite une page qui semble **vide, cassée ou « page introuvable »**. C'est
+   normal : l'adresse de cette page porte l'autorisation.
+6. Cliquez dans la barre d'adresse et copiez **l'adresse complète**. Elle commence par
+   `https://www.amazon.fr/ap/maplanding?` (avec votre site) et elle est longue.
+7. De retour dans Gladys, en bas de l'onglet Configuration, collez-la dans **Terminer la connexion**
+   et lancez l'action, **dans les minutes qui suivent** (le code expire vite et ne sert qu'une
+   fois).
+8. La réponse indique combien d'Echo ont été trouvés. L'état en haut passe à connecté.
+9. Ouvrez l'onglet **Découverte** et ajoutez vos Echo.
 
-- **Tester le fournisseur météo** — effectue une requête en direct vers
-  Open-Meteo et affiche la température et l'humidité actuelles sous le
-  bouton.
-- **Identifier un appareil** — choisissez un de vos appareils dans la liste
-  et il se signale (la lampe de démonstration « clignote » dans les logs).
+Gladys apparaît désormais comme un appareil « Amazon Alexa » dans votre compte Amazon. Pour tout
+défaire, lancez **Se déconnecter d'Amazon** : les identifiants sont supprimés de Gladys et cet
+appareil est retiré de votre compte.
 
-## Scènes
+### En cas d'échec
 
-L'intégration ajoute ses propres cartes à l'éditeur de scènes (Gladys 5.1
-ou plus récent), dans la catégorie **Intégrations** :
+- _« Ce n'est pas l'adresse de retour »_ : l'adresse a été copiée trop tôt (ou c'est celle de la
+  page de connexion). Terminez la connexion, puis copiez l'adresse de la page qui suit.
+- _« Cette adresse appartient à un autre site Amazon »_ : le site de la configuration n'est pas
+  celui de la page. Choisissez le bon, enregistrez, cliquez à nouveau sur **Connecter**.
+- _« Amazon a refusé la connexion »_ : le code a déjà servi ou il est trop ancien. Cliquez sur
+  **Connecter** et recommencez, un peu plus vite.
+- _« Amazon a refusé la connexion enregistrée »_ (plus tard) : l'appareil a été retiré de votre
+  compte, ou votre mot de passe a changé. Reconnectez-vous.
 
-- **Mouvement détecté** (déclencheur) — lance la scène quand un détecteur
-  de démonstration voit bouger quelque chose. Choisissez éventuellement le
-  détecteur et ce qui a bougé (personne, animal) ; laissés vides, toute
-  détection correspond. Les actions suivantes peuvent lire ce qui a bougé
-  avec `{{triggerEvent.data.target}}`.
-- **Identifier un appareil** (action) — fait se signaler l'appareil choisi.
-  Elle indique si l'appareil a pu se signaler, pour que les actions
-  suivantes puissent en dépendre.
+## Vos Echo dans Gladys
 
-## Tableau de bord
+Chaque Echo est un appareil. Chaque groupe multi-pièces aussi.
 
-Ajoutez le widget **État de la démo** à un tableau de bord : il affiche en
-direct la température de la station météo et la puissance de la prise du
-bureau, la connexion utilisée par la prise (en orange si dégradée) et la
-position observée. Son bouton **Identifier la lampe** fait se signaler la
-lampe de démonstration.
+| Fonctionnalité        | Echo | Groupe | Remarques                                   |
+| --------------------- | ---- | ------ | ------------------------------------------- |
+| Volume                | oui  | non    | 0 à 100                                     |
+| Ne pas déranger       | oui  | non    | activé / désactivé                          |
+| Lecture, pause, préc. | oui¹ | oui    | et suivant                                  |
+| État de lecture       | oui¹ | oui    | 1 pendant la lecture                        |
+| En cours de lecture   | oui¹ | oui    | « Titre — Artiste »                         |
+| Notification          | oui  | oui    | pour l'action « Diffuser une notification » |
 
-## Dépannage
+¹ Les Echo qui ont un lecteur de musique (pas un Echo Spot sans musique, par exemple).
 
-L'intégration journalise tout ce qu'elle fait : consultez les logs de
-l'intégration depuis l'interface Gladys (ou `docker logs` sur l'hôte) avec
-`LOG_LEVEL=debug` pour le détail complet.
+Les états sont lus toutes les 2 minutes par défaut (**Intervalle de rafraîchissement** dans la
+configuration), et seulement pour les Echo ajoutés. Amazon bloque les comptes trop bavards : ne
+descendez pas sous la valeur par défaut sans raison.
+
+Le réglage **Langue des noms et des messages** donne les noms des fonctionnalités des Echo ajoutés
+ensuite (Gladys les garde une fois l'appareil ajouté) et la langue des messages d'erreur.
+
+## Dans les scènes
+
+**Faire parler un Echo** (actions Amazon Echo) :
+
+- **Echo** : un ou plusieurs ; un groupe parle par ses enceintes.
+- **Texte à dire** : les variables de scène sont permises. Jusqu'à 1 000 caractères ; Alexa dit
+  les textes longs en morceaux de 250 caractères.
+- **Comment** : _Parler_ (l'Echo parle simplement) ou _Annonce_ (un carillon d'abord, sur tous les
+  Echo choisis à la fois).
+- **Volume** (facultatif) : réglé avant de parler, puis le volume précédent revient.
+
+**Lancer une routine Alexa** : tapez le nom de la routine comme dans l'application Alexa, ou la
+phrase qui la déclenche. Le bouton **Lister mes routines Alexa** de la configuration affiche les
+noms. Choisissez un Echo si la routine a des étapes qui agissent sur « l'appareil auquel vous
+parlez ».
+
+**Echo : Ne pas déranger** : activé ou désactivé, sur un ou plusieurs Echo.
+
+**Diffuser une notification** (l'action du cœur, catégorie Musique) marche aussi avec un Echo, mais
+demande **Gladys Plus** : le cœur y transforme votre texte en fichier audio et n'envoie que son
+adresse (et pas le volume). Alexa ne lit un fichier audio que dans certains formats ; si votre Echo
+reste muet, utilisez **Faire parler un Echo**, qui envoie le texte lui-même.
+
+## Widget du tableau de bord
+
+Ajoutez le widget **Lecteur Echo** et choisissez un Echo : titre, artiste, état, Ne pas déranger,
+le volume en direct et les boutons précédent / lecture-pause / suivant.
+
+## Limites
+
+- API non officielle : elle peut casser quand Amazon la modifie.
+- Pas de sourdine (l'API web n'en propose pas) ni de déclencheur de scène (rien de fiable pour en
+  démarrer une).
+- Deux paroles envoyées au même moment peuvent s'interrompre.
+- Testée seulement sur des réponses reconstituées, jamais encore sur un vrai compte.
+
+## Vie privée
+
+L'intégration garde, dans son propre dossier de Gladys (`/data`, lisible par elle seule) : le jeton
+de renouvellement de l'appareil « Amazon Alexa », le site Amazon et votre identifiant client
+Amazon. Rien d'autre, et jamais dans les journaux. Elle ne parle qu'à Amazon.

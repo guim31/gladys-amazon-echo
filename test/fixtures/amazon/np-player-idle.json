@@ -1,0 +1,18 @@
+{
+  "playerInfo": {
+    "hint": null,
+    "infoText": null,
+    "isPlayingInLemur": false,
+    "lemurVolume": null,
+    "mainArt": null,
+    "mediaId": null,
+    "miniArt": null,
+    "playingInLemurId": null,
+    "progress": null,
+    "provider": null,
+    "queueId": null,
+    "state": null,
+    "transport": null,
+    "volume": { "muted": false, "volume": 25 }
+  }
+}

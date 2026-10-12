@@ -7,10 +7,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { DEVICE_BLUEPRINTS, SCENE_TRIGGER_KEYS } from '../src/devices/index.js';
+import { ACTIONS } from '../src/actions.js';
 import { SCENE_ACTIONS } from '../src/scenes.js';
 import { WIDGETS } from '../src/widgets.js';
-import { DEFAULT_CONFIG } from '../src/config.js';
+import { DEFAULT_CONFIG, REFRESH_INTERVALS } from '../src/config.js';
+import { REGIONS } from '../src/regions.js';
 
 const manifest = JSON.parse(
   await readFile(new URL('../gladys-assistant-integration.json', import.meta.url), 'utf8'),
@@ -28,9 +29,6 @@ const allFields = [
   ].flatMap((item) => item.fields ?? []),
   ...(manifest.widgets ?? []).flatMap((widget) => widget.settings ?? []),
 ];
-
-// Actions registered outside the blueprints (see index.js).
-const REGISTRY_LEVEL_ACTIONS = ['identify'];
 
 // Manifest fields older Gladys releases reject as unknown, with the first
 // release accepting them. The store validator refuses a manifest whose
@@ -57,14 +55,8 @@ function isAtLeast(version, required) {
   return true;
 }
 
-test('every manifest action has a registered handler', () => {
-  const handled = new Set([
-    ...DEVICE_BLUEPRINTS.flatMap((bp) => Object.keys(bp.actions ?? {})),
-    ...REGISTRY_LEVEL_ACTIONS,
-  ]);
-  for (const action of manifest.actions ?? []) {
-    assert.ok(handled.has(action.key), `manifest action "${action.key}" has no handler`);
-  }
+test('every manifest action has a handler, and vice versa', () => {
+  assert.deepEqual(keysOf(manifest.actions).sort(), Object.keys(ACTIONS).sort());
 });
 
 test('declaring catalog categories requires Gladys >= 4.86.0', () => {
@@ -82,7 +74,7 @@ test('declaring catalog categories requires Gladys >= 4.86.0', () => {
 
 test('declaring scene triggers, scene actions or widgets requires Gladys >= 5.1.0', () => {
   const declared = CAPABILITY_FIELDS.filter((field) => manifest[field] !== undefined);
-  assert.ok(declared.length > 0, 'the template demonstrates the capability fields');
+  assert.ok(declared.length > 0, 'the integration declares capability fields');
   assert.ok(
     isAtLeast(minGladysVersion(), CAPABILITY_MIN_GLADYS_VERSION),
     `${declared.join(', ')} requires gladys_version >= 5.1.0, got "${manifest.gladys_version}"`,
@@ -109,16 +101,10 @@ test('every widgets key has an onWidgetGet handler, and vice versa', () => {
   }
 });
 
-test('every scene trigger the code fires is declared in scene_triggers, and vice versa', () => {
-  // An undeclared key is a 404 on publishSceneEvent; a declared key nobody
-  // fires is a dead card in the scene editor.
-  const declared = keysOf(manifest.scene_triggers);
-  for (const key of SCENE_TRIGGER_KEYS) {
-    assert.ok(declared.includes(key), `trigger "${key}" is fired but not declared`);
-  }
-  for (const key of declared) {
-    assert.ok(SCENE_TRIGGER_KEYS.includes(key), `trigger "${key}" is declared but never fired`);
-  }
+test('no scene trigger is declared: the integration fires none', () => {
+  // A declared key nobody fires is a dead card in the scene editor. The web
+  // API offers nothing reliable to start a scene on (see docs/en.md).
+  assert.equal(manifest.scene_triggers, undefined);
 });
 
 test('config_schema defaults stay consistent with DEFAULT_CONFIG', () => {
@@ -135,7 +121,7 @@ test('config_schema defaults stay consistent with DEFAULT_CONFIG', () => {
 
 test('section fields are purely presentational', () => {
   const sections = manifest.config_schema.filter((f) => f.type === 'section');
-  assert.ok(sections.length > 0, 'the template demonstrates at least one section block');
+  assert.ok(sections.length > 0, 'the configuration explains the sign-in in sections');
   for (const section of sections) {
     // A section stores NO value: declaring `required`, `default` or
     // `placeholder` on it rejects the manifest, and its key must never leak
@@ -160,7 +146,7 @@ test('section fields are purely presentational', () => {
 
 test('dynamic selects declare a source and no static options', () => {
   const dynamicSelects = allFields.filter((f) => f.source !== undefined);
-  assert.ok(dynamicSelects.length > 0, 'the template demonstrates a dynamic select');
+  assert.ok(dynamicSelects.length > 0, 'the Echos are picked from a dynamic select');
   for (const field of dynamicSelects) {
     assert.equal(field.source, 'devices', 'the only core-defined source in V1 is "devices"');
     assert.equal(
@@ -196,9 +182,58 @@ test('the catalog description holds 10 to 100 characters per language', () => {
 test('field placeholders are multi-language objects', () => {
   // Like `label` and `description`: a plain string rejects the manifest.
   const withPlaceholder = allFields.filter((f) => f.placeholder !== undefined);
-  assert.ok(withPlaceholder.length > 0, 'the template demonstrates a placeholder');
+  assert.ok(withPlaceholder.length > 0, 'the sign-in address field shows an example');
   for (const field of withPlaceholder) {
     assert.equal(typeof field.placeholder, 'object', `field "${field.key}": placeholder`);
     assert.ok(field.placeholder.en, `field "${field.key}": placeholder needs an English text`);
+  }
+});
+
+test('the manifest identifies this integration', () => {
+  assert.equal(manifest.name, 'Amazon Echo');
+  assert.equal(manifest.type, 'device');
+  assert.deepEqual(manifest.transports, ['cloud']);
+  assert.ok(manifest.docker_image.startsWith('ghcr.io/guim31/gladys-amazon-echo:'));
+  assert.equal(
+    manifest.cover_image,
+    'https://raw.githubusercontent.com/guim31/gladys-amazon-echo/main/cover.png',
+  );
+});
+
+test('the region select offers exactly the supported marketplaces', () => {
+  const region = manifest.config_schema.find((field) => field.key === 'region');
+  assert.deepEqual(
+    region.options.map((option) => option.value).sort(),
+    Object.keys(REGIONS).sort(),
+  );
+});
+
+test('the refresh interval select offers exactly the supported intervals', () => {
+  const interval = manifest.config_schema.find((field) => field.key === 'refresh_interval');
+  assert.deepEqual(
+    interval.options.map((option) => Number(option.value)),
+    REFRESH_INTERVALS,
+  );
+});
+
+test('the sign-in is an account_link field, which needs no stored value', () => {
+  const link = manifest.config_schema.find((field) => field.type === 'account_link');
+  assert.equal(link.key, 'amazon_account');
+  assert.equal(link.default, undefined);
+  assert.equal(link.required, undefined);
+});
+
+test('no action field is a secret (impossible to fill in, Gladys#3154)', () => {
+  for (const action of manifest.actions) {
+    for (const field of action.fields ?? []) assert.notEqual(field.type, 'secret');
+  }
+});
+
+test('number fields have integer bounds (rendered without step)', () => {
+  for (const field of allFields.filter((f) => f.type === 'number')) {
+    for (const bound of ['min', 'max', 'default']) {
+      if (field[bound] !== undefined)
+        assert.ok(Number.isInteger(field[bound]), `${field.key}.${bound}`);
+    }
   }
 });

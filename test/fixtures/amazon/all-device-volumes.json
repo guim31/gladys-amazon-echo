@@ -1,0 +1,28 @@
+{
+  "volumes": [
+    {
+      "alertVolume": null,
+      "deviceType": "A32DOYMUN6DTXA",
+      "dsn": "G0EXAMPLEDOT0001",
+      "error": null,
+      "speakerMuted": false,
+      "speakerVolume": 40
+    },
+    {
+      "alertVolume": null,
+      "deviceType": "A15996VY63BQ2D",
+      "dsn": "G0EXAMPLESHOW001",
+      "error": null,
+      "speakerMuted": false,
+      "speakerVolume": 25
+    },
+    {
+      "alertVolume": null,
+      "deviceType": "A10L5JEZTKKCZ8",
+      "dsn": "G0EXAMPLESPOT001",
+      "error": null,
+      "speakerMuted": false,
+      "speakerVolume": 60
+    }
+  ]
+}

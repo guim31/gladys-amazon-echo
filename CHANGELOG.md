@@ -12,28 +12,17 @@ the notes of the version's GitHub Release.
 
 ### Added
 
-- A working example of scene triggers, scene actions and dashboard widgets
-  (Gladys 5.1.0 or later).
-- `CHANGELOG.md`, rolled by the Release workflow.
-- A GitHub Release for every version, with its changelog section as notes: the
-  Gladys Supervision page links each version to the repository's releases.
-- CI runs the tests on Node 22 and 24, and builds the Docker image.
-- Dependabot keeps the npm dependencies and the GitHub Actions up to date.
-- `SECURITY.md` (how to report a vulnerability) and `CLAUDE.md` (project rules
-  for contributors and coding assistants).
-- Manifest tests: `version` matches `package.json`, `docker_image` is tagged
-  with it, descriptions hold 10 to 100 characters, placeholders are
-  multi-language objects.
-- The latitude and longitude fields show an example value as placeholder.
+- Amazon Echo integration: one Gladys device per Echo and per multi-room
+  group, with volume, Do Not Disturb, play / pause / previous / next, playback
+  state, the title playing, and the notification feature of the core's "Play a
+  notification" scene action.
+- Sign-in to Amazon on Amazon's own page, without a proxy: "Connect", then
+  paste the return address in "Finish the sign-in". Twelve marketplaces.
+- Scene actions "Make an Echo speak" (speech or announcement, several Echos,
+  optional volume restored afterwards), "Run an Alexa routine" and "Echo: Do
+  Not Disturb".
+- Dashboard widget "Echo player".
+- Configuration buttons: list the Alexa routines, test the speech, sign out.
+- English, French, German and Spanish texts.
 
-### Changed
-
-- Node.js 22 or later is required (Node 20 is end-of-life).
-
-### Fixed
-
-- The release commit no longer fails `npm run format:check`: the Release
-  workflow updates the manifest `version` and `docker_image` in place instead
-  of re-printing the whole file with `jq`.
-
-[Unreleased]: https://github.com/GladysAssistant/integration-template-js/commits/main
+[Unreleased]: https://github.com/guim31/gladys-amazon-echo/commits/main

@@ -31,16 +31,23 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
-src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
+index.js                          bootstrap: SDK + service + handlers, then connect()
+src/app.js                        every handler registered on the SDK (tested on a fake Gladys)
+src/service.js                    state and behaviour: sign-in, refresh timer, commands, routines
+src/amazon/auth.js                sign-in (PKCE URL, device registration), cookies, csrf
+src/amazon/client.js              Alexa web API client (session, queue, endpoints)
+src/amazon/sequences.js           pure builders of the /api/behaviors/preview payloads
+src/amazon/http.js                fetch wrapper, cookie jar, request queue, error kinds
+src/devices/echo.js               Echo model (from devices-v2), feature keys, discovery payload
+src/states.js                     readings -> Gladys states, change tracking
+src/scenes.js / src/actions.js    scene actions / Configuration buttons
+src/widgets.js                    "Echo player" widget
+src/messages.js, src/i18n.js      user texts in en/fr/de/es
+src/store.js                      credentials in /data (mode 600)
+src/config.js, src/regions.js     DEFAULT_CONFIG (mirrors the manifest) / Amazon marketplaces
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
 docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test; test/helpers/fakeGladys.js stands in for the SDK
+test/                             node --test; helpers/fakeGladys.js and helpers/fakeAmazon.js
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -140,6 +147,28 @@ code de ce dépôt. Compléter ce fichier quand un nouveau piège est découvert
 - Une intégration `device` ne reçoit pas la langue de l'utilisateur, une action de scène non
   plus (un widget, si) : prévoir un champ de config `language` si des textes partent du
   conteneur. Le superviseur injecte `TZ`, le fuseau de Gladys. La sandbox est limitée à 256 Mo.
+
+**Appris sur l'intégration Amazon Echo**
+
+- L'action du cœur « Diffuser une notification » n'envoie que l'URL d'un MP3 de Gladys Plus
+  (`<backend>/tts/<uuid>/generate.mp3`, valable 5 minutes, `tts.controller.js` de
+  gladys-gateway) : **le texte n'est pas récupérable** et le volume est perdu. Une intégration qui
+  sait dire un texte doit offrir sa propre action de scène.
+- **`account_link` marche en 5.1.4** pour ouvrir une page de connexion construite par
+  l'intégration (`onOAuthAuthorizeUrl(key, undefined)`, ouverte en `noreferrer`) : rien ne revient,
+  l'apparier à une action qui reçoit l'adresse collée. Le gestionnaire lit la configuration
+  **enregistrée** : faire enregistrer la région avant « Connecter ».
+- Servir une page au navigateur : le conteneur principal n'a aucun port ; un sous-conteneur
+  (`containers[].ports`, `{{port:<name>}}` dans les sections) le peut en 5.1.4, mais
+  `release.mjs` ne met à jour que le `docker_image` **de premier niveau** : un sous-conteneur qui
+  reprendrait l'image de l'intégration resterait figé sur une ancienne version.
+- Le SDK publié 0.14.0 n'exporte pas `DEVICE_POLL_FREQUENCIES`.
+- `test/i18n.test.js` refuse tout « Sie » capitalisé, y compris « Sie kann… » (= elle) en début de
+  phrase : reformuler plutôt qu'assouplir le test.
+- Les textes de `section` gardent les `\n` (rendu `pre-wrap`) : une procédure numérotée y tient.
+- `alexa-remote2`/`alexa-cookie2` : 106 paquets et 11 Mo (express), jetons et cookies écrits dans
+  leurs journaux dès qu'on leur passe un logger, `de-DE` et « ioBroker » codés en dur. Un client
+  `fetch` de quelques centaines de lignes suffit : voir `src/amazon/`.
 
 **Formulaires de configuration et actions**
 
