@@ -55,10 +55,12 @@ a scene on.
 
 1. In Gladys, **Integrations → Store**, install **Echo Media Player**.
 2. In its **Configuration** tab, choose your **Amazon marketplace** and **save**.
-3. Click **Connect**: Amazon's own sign-in page opens in a new tab. Sign in there (password,
-   verification code, captcha are all handled by Amazon; Gladys never sees your password).
+3. Click **Connect**: Amazon's own sign-in page opens in a new tab. It is the **Amazon Alexa page
+   on amazon.com**, even for an amazon.fr or amazon.de account: that is expected (amazon.co.jp for
+   Japan). Sign in there (password, verification code, captcha are all handled by Amazon; Gladys
+   never sees your password).
 4. Amazon then shows a page that looks empty or broken: that is expected. Copy its **whole
-   address** (it contains `/ap/maplanding`).
+   address**: it starts with `https://www.amazon.com/ap/maplanding?`.
 5. Within a few minutes, paste it in the **Finish the sign-in** action of the Configuration tab and
    run it. The answer lists how many Echos were found.
 6. Add the Echos from the **Discover** tab.
@@ -72,7 +74,10 @@ The full step-by-step guide, with troubleshooting, is in [`docs/en.md`](docs/en.
   Alexa" app, the way the Alexa iOS app does (OAuth with PKCE, the "paste the return address" flow
   of alexapy). The main container of a Gladys integration cannot publish a port, so serving the
   usual login proxy of alexa-cookie2 would need a sub-container, a published port and a matching
-  host name; pasting one address is simpler and never exposes anything on the LAN.
+  host name; pasting one address is simpler and never exposes anything on the LAN. As in
+  alexa-cookie2, the sign-in page, the device registration and the token refresh are on amazon.com
+  (amazon.co.jp for Japan) whatever the marketplace; the cookie exchange and the Alexa web API are
+  on the marketplace (`www.amazon.fr`, `alexa.amazon.fr`).
 - **Credentials.** Only the **refresh token** of that app registration is kept, in
   `/data/credentials.json` (mode 600), with the marketplace and the customer id. The session
   cookies are minted from it at start-up and once a day, kept in memory, and never logged.

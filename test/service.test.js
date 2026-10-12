@@ -14,7 +14,7 @@ import { MESSAGES } from '../src/messages.js';
 
 const ADDED = [SERIALS.DOT, SERIALS.SHOW, SERIALS.GROUP, SERIALS.SPOT, SERIALS.STUDIO];
 const RETURN =
-  'https://www.amazon.fr/ap/maplanding?openid.assoc_handle=amzn_dp_project_dee_ios&openid.oa2.authorization_code=ANEXAMPLECODE';
+  'https://www.amazon.com/ap/maplanding?openid.assoc_handle=amzn_dp_project_dee_ios&openid.oa2.authorization_code=ANEXAMPLECODE';
 
 const sequenceOf = (request) => JSON.parse(request.body.sequenceJson).startNode;
 
@@ -44,7 +44,7 @@ test('the sign-in: Connect opens Amazon, the return address finishes it', async 
   await gladys.emit('connected');
 
   const url = await gladys.handlers.oauthAuthorizeUrl('amazon_account', undefined);
-  assert.match(url, /^https:\/\/www\.amazon\.fr\/ap\/register\?/);
+  assert.match(url, /^https:\/\/www\.amazon\.com\/ap\/signin\?/);
   const flowFile = await stat(join(dir, 'sign-in.json'));
   assert.equal(flowFile.mode & 0o777, 0o600);
 

@@ -7,11 +7,13 @@
 //   1. startSignIn: a fresh device serial and PKCE verifier, and the URL of
 //      Amazon's own sign-in page for an "Amazon Alexa" app on that device. The
 //      user signs in in their own browser (password, two-step verification,
-//      captcha: all on amazon.xx), and lands on /ap/maplanding?…code=…;
+//      captcha: all on Amazon), and lands on /ap/maplanding?…code=…. As in
+//      alexa-cookie2, that page is on amazon.com whatever the marketplace
+//      (amazon.co.jp for Japan): see signInBase;
 //   2. codeFromReturnAddress: the authorization code of that address, pasted
 //      back by the user;
 //   3. registerDevice: code + verifier -> a refresh token (`Atnr|…`), the one
-//      durable secret, stored in /data;
+//      durable secret, stored in /data (api.amazon.com, like /auth/token);
 //   4. exchangeCookies + fetchCsrf, at every start and whenever Amazon refuses
 //      the session: refresh token -> website cookies of the marketplace ->
 //      the `csrf` the Alexa web API wants in a header.
@@ -19,7 +21,7 @@
 
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { AmazonError, CookieJar, errorOf, parseJson, send } from './http.js';
-import { isRegion, signInLanguage } from '../regions.js';
+import { isRegion, signInBase, signInLanguage } from '../regions.js';
 
 const APP_NAME = 'Amazon Alexa';
 const APP_VERSION = '2.2.556530.0';
@@ -73,34 +75,48 @@ export function startSignIn(domain, { now = Date.now() } = {}) {
   return { flow, url: signInUrl(flow) };
 }
 
+// The headers alexa-cookie2 sends to the token endpoints of a domain.
+const authDomain = (domain) => ({ 'x-amzn-identity-auth-domain': `api.${domain}` });
+
+/**
+ * The OpenID page handle: `amzn_dp_project_dee_ios` on amazon.com, with the
+ * top-level domain appended elsewhere (`…_jp`), as alexa-cookie2 builds it.
+ */
+function pageHandle(base) {
+  const tld = base.slice(base.lastIndexOf('.') + 1);
+  return tld === 'com' ? 'amzn_dp_project_dee_ios' : `amzn_dp_project_dee_ios_${tld}`;
+}
+
 export function signInUrl({ domain, serial, code_verifier: verifier }) {
   checkRegion(domain);
+  const base = signInBase(domain);
   const challenge = base64url(createHash('sha256').update(verifier).digest());
   const query = new URLSearchParams({
-    'openid.return_to': `https://www.${domain}/ap/maplanding`,
-    'openid.assoc_handle': 'amzn_dp_project_dee_ios',
+    'openid.return_to': `https://www.${base}/ap/maplanding`,
+    'openid.assoc_handle': pageHandle(base),
     'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
-    pageId: 'amzn_dp_project_dee_ios',
+    pageId: pageHandle(base),
     accountStatusPolicy: 'P1',
     'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
     'openid.mode': 'checkid_setup',
-    'openid.ns.oa2': 'http://www.amazon.com/ap/ext/oauth/2',
+    'openid.ns.oa2': `http://www.${base}/ap/ext/oauth/2`,
     'openid.oa2.client_id': `device:${deviceId(serial)}`,
     'openid.ns.pape': 'http://specs.openid.net/extensions/pape/1.0',
     'openid.oa2.response_type': 'code',
     'openid.ns': 'http://specs.openid.net/auth/2.0',
     'openid.pape.max_auth_age': '0',
-    'openid.oa2.scope': 'device_auth_access offline_access',
+    'openid.oa2.scope': 'device_auth_access',
     'openid.oa2.code_challenge_method': 'S256',
     'openid.oa2.code_challenge': challenge,
+    // The page speaks the language of the marketplace, not of amazon.com.
     language: signInLanguage(domain),
   });
-  return `https://www.${domain}/ap/register?${query}`;
+  return `https://www.${base}/ap/signin?${query}`;
 }
 
 /**
  * The authorization code of the address the browser landed on. Only an https
- * maplanding address of the marketplace of the sign-in is accepted.
+ * maplanding address of the site of the sign-in page (signInBase) is accepted.
  * Resolves `{ code }`, or `{ error }` with the reason (a key of the messages).
  */
 export function codeFromReturnAddress(address, domain) {
@@ -113,7 +129,7 @@ export function codeFromReturnAddress(address, domain) {
   if (url.protocol !== 'https:' || url.pathname !== '/ap/maplanding') {
     return { error: 'not_a_return_address' };
   }
-  if (url.hostname !== `www.${domain}`) return { error: 'other_marketplace' };
+  if (url.hostname !== `www.${signInBase(domain)}`) return { error: 'other_marketplace' };
   const code = url.searchParams.get('openid.oa2.authorization_code');
   return code ? { code } : { error: 'no_code' };
 }
@@ -121,6 +137,7 @@ export function codeFromReturnAddress(address, domain) {
 /** Exchange the code for a refresh token: the device is now registered on the account. */
 export async function registerDevice(fetchImpl, flow, code) {
   checkRegion(flow.domain);
+  const base = signInBase(flow.domain);
   const frc = randomBytes(313).toString('base64').replace(/=+$/, '');
   const mapMd = Buffer.from(
     JSON.stringify({
@@ -133,7 +150,7 @@ export async function registerDevice(fetchImpl, flow, code) {
     .replace(/=+$/, '');
   const body = {
     requested_extensions: ['device_info', 'customer_info'],
-    cookies: { website_cookies: [], domain: `.${flow.domain}` },
+    cookies: { website_cookies: [], domain: `.${base}` },
     registration_data: {
       domain: 'Device',
       app_version: APP_VERSION,
@@ -155,9 +172,13 @@ export async function registerDevice(fetchImpl, flow, code) {
     user_context_map: { frc },
     requested_token_type: ['bearer', 'mac_dms', 'website_cookies'],
   };
-  const response = await send(fetchImpl, `https://api.${flow.domain}/auth/register`, {
+  const response = await send(fetchImpl, `https://api.${base}/auth/register`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...authDomain(base),
+    },
     body: JSON.stringify(body),
     jar: new CookieJar({ frc, 'map-md': mapMd }),
   });
@@ -182,7 +203,7 @@ function tokenForm(fields) {
   return new URLSearchParams({ ...TOKEN_FORM, ...fields }).toString();
 }
 
-/** Website cookies of the marketplace, minted from the refresh token. */
+/** Website cookies of the marketplace, minted from the refresh token, on the marketplace. */
 export async function exchangeCookies(fetchImpl, credentials) {
   checkRegion(credentials.domain);
   const response = await send(
@@ -190,7 +211,10 @@ export async function exchangeCookies(fetchImpl, credentials) {
     `https://www.${credentials.domain}/ap/exchangetoken/cookies`,
     {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        ...authDomain(credentials.domain),
+      },
       body: tokenForm({
         domain: `.${credentials.domain}`,
         source_token: credentials.refresh_token,
@@ -235,9 +259,11 @@ export async function fetchCsrf(fetchImpl, domain, jar) {
 
 /** A short-lived bearer token, only needed to deregister the device. */
 export async function accessToken(fetchImpl, credentials) {
-  const response = await send(fetchImpl, `https://api.${credentials.domain}/auth/token`, {
+  checkRegion(credentials.domain);
+  const base = signInBase(credentials.domain);
+  const response = await send(fetchImpl, `https://api.${base}/auth/token`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', ...authDomain(base) },
     body: tokenForm({
       source_token: credentials.refresh_token,
       requested_token_type: 'access_token',
@@ -249,11 +275,15 @@ export async function accessToken(fetchImpl, credentials) {
   return token;
 }
 
-/** Remove the app device from the Amazon account (best effort, at sign-out). */
+/**
+ * Remove the app device from the Amazon account (best effort, at sign-out),
+ * on the domain it was registered on.
+ */
 export async function deregisterDevice(fetchImpl, credentials) {
   try {
     const token = await accessToken(fetchImpl, credentials);
-    const response = await send(fetchImpl, `https://api.${credentials.domain}/auth/deregister`, {
+    const base = signInBase(credentials.domain);
+    const response = await send(fetchImpl, `https://api.${base}/auth/deregister`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ requested_deregister_type: 'deregister_device' }),

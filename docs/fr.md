@@ -26,13 +26,16 @@ elle-même.
 1. Ouvrez **Intégrations → Echo Media Player → Configuration**.
 2. Choisissez votre **site Amazon** (celui de votre compte : amazon.fr, amazon.de…) et cliquez sur
    **Enregistrer**.
-3. Cliquez sur **Connecter**. La page de connexion d'Amazon s'ouvre dans un nouvel onglet.
+3. Cliquez sur **Connecter**. La page de connexion d'Amazon s'ouvre dans un nouvel onglet. C'est
+   celle d'**Amazon Alexa sur amazon.com**, même pour un compte amazon.fr ou amazon.de, et c'est
+   normal : l'application Alexa se connecte toujours là, puis Gladys utilise votre site Amazon. La
+   page est dans la langue de votre site. (Pour le Japon, c'est amazon.co.jp.)
 4. Connectez-vous : e-mail, mot de passe, et le code de vérification si la validation en deux
    étapes est active.
 5. Amazon affiche ensuite une page qui semble **vide, cassée ou « page introuvable »**. C'est
    normal : l'adresse de cette page porte l'autorisation.
 6. Cliquez dans la barre d'adresse et copiez **l'adresse complète**. Elle commence par
-   `https://www.amazon.fr/ap/maplanding?` (avec votre site) et elle est longue.
+   `https://www.amazon.com/ap/maplanding?` (même pour un compte amazon.fr) et elle est longue.
 7. De retour dans Gladys, en bas de l'onglet Configuration, collez-la dans **Terminer la connexion**
    et lancez l'action, **dans les minutes qui suivent** (le code expire vite et ne sert qu'une
    fois).
@@ -47,8 +50,10 @@ appareil est retiré de votre compte.
 
 - _« Ce n'est pas l'adresse de retour »_ : l'adresse a été copiée trop tôt (ou c'est celle de la
   page de connexion). Terminez la connexion, puis copiez l'adresse de la page qui suit.
-- _« Cette adresse appartient à un autre site Amazon »_ : le site de la configuration n'est pas
-  celui de la page. Choisissez le bon, enregistrez, cliquez à nouveau sur **Connecter**.
+- _« Cette adresse ne vient pas de la page de connexion ouverte par Gladys »_ : l'adresse collée
+  ne commence pas par `https://www.amazon.com/ap/maplanding?` (par exemple une page d'amazon.fr
+  ouverte à la main). Cliquez à nouveau sur **Connecter** et copiez l'adresse de la page qui suit
+  la connexion.
 - _« Amazon a refusé la connexion »_ : le code a déjà servi ou il est trop ancien. Cliquez sur
   **Connecter** et recommencez, un peu plus vite.
 - _« Amazon a refusé la connexion enregistrée »_ (plus tard) : l'appareil a été retiré de votre
