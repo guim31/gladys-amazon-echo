@@ -1,59 +1,112 @@
-# Demo Devices Template
+# Amazon Echo
 
-This is the user documentation of the integration. Gladys re-hosts this file
-and shows a permanent **Documentation** link to it in the Configuration screen
-(in the user's language, with English as the fallback) — it is when
-configuring that the user needs it most. Keep the short onboarding hints in
-the `section` blocks of the manifest `config_schema`; put the long
-step-by-step (screenshots, troubleshooting…) here.
+Make your Echos speak in your scenes, run your Alexa routines, and control music, volume and Do Not
+Disturb from Gladys.
 
-## What you get
+> **Unofficial and not affiliated with Amazon.** This integration uses the web API of the Alexa app,
+> which Amazon does not document: it may stop working when Amazon changes it.
+>
+> **Developed without the hardware: feedback welcome.** Tell us on the Gladys forum what works with
+> your Echos and what does not.
 
-Six demo devices show up after installation: a weather station (real data
-from Open-Meteo), a switch, a dimmable light, a smart plug with power
-metering, a motion sensor and a camera.
+## Before you start
 
-## Configuration
+- Gladys 5.1.0 or later.
+- Your Amazon account, with your Echos set up in the Alexa app.
+- A **computer** for the sign-in: on a phone with the Alexa app installed, Amazon may open the app
+  instead of the sign-in page.
 
-1. Open the **Configuration** tab of the integration.
-2. Set the **latitude** and **longitude** the demo weather station should
-   observe (they default to Paris), and pick your temperature unit.
-3. Save: the devices appear in the **Discovery** tab, ready to be added.
+## Sign in to Amazon
 
-The **Prefer the local connection** toggle drives the demo plug: it reports
-the channel it actually uses as a badge (local or cloud), with an orange dot
-when it runs degraded (local refused, cloud fallback).
+You do this once. Gladys never sees your password: you sign in on Amazon's own page.
 
-## Actions
+1. Open **Integrations → Amazon Echo → Configuration**.
+2. Choose your **Amazon marketplace** (the site of your account: amazon.fr, amazon.de…) and click
+   **Save**.
+3. Click **Connect**. Amazon's sign-in page opens in a new tab.
+4. Sign in: email, password, and the verification code if two-step verification is on.
+5. Amazon then shows a page that looks **empty, broken or "page not found"**. That is expected: the
+   address of this page carries the authorization.
+6. Click the address bar and copy the **whole address**. It starts with
+   `https://www.amazon.fr/ap/maplanding?` (with your marketplace) and is long.
+7. Back in Gladys, at the bottom of the Configuration tab, paste it in **Finish the sign-in** and run
+   the action, **within a few minutes** (the code expires quickly and works once).
+8. The answer says how many Echos were found. The status at the top turns to connected.
+9. Open the **Discover** tab and add your Echos.
 
-- **Test the weather provider** — performs a live request to Open-Meteo and
-  shows the current temperature and humidity under the button.
-- **Identify a device** — pick one of your devices in the list and it will
-  signal itself (the demo light "blinks" in the logs).
+Gladys now appears as an "Amazon Alexa" device in your Amazon account. To undo everything, run
+**Sign out of Amazon**: the credentials are deleted from Gladys and that device is removed from your
+account.
 
-## Scenes
+### If it fails
 
-The integration adds its own cards to the scene editor (Gladys 5.1 or
-later), under the **Integrations** category:
+- _"This is not the return address"_: you copied the address too early (or the sign-in page itself).
+  Finish signing in, then copy the address of the page that follows.
+- _"This address belongs to another Amazon marketplace"_: the marketplace of the configuration is
+  not the one of the page. Choose the right one, save, click **Connect** again.
+- _"Amazon refused the sign-in"_: the code was already used or too old. Click **Connect** and start
+  again, a bit faster.
+- _"Amazon refused the stored sign-in"_ (later on): the registration was removed from your account,
+  or your password changed. Sign in again.
 
-- **Motion detected** (trigger) — starts the scene when a demo motion sensor
-  sees something move. Optionally pick the sensor and what moved (person,
-  animal); left empty, any detection matches. The following actions can
-  read what moved with `{{triggerEvent.data.target}}`.
-- **Identify a device** (action) — makes the chosen device signal itself.
-  It returns whether the device could signal itself, so the following
-  actions can depend on it.
+## Your Echos in Gladys
 
-## Dashboard
+Each Echo is a device. Each multi-room group too.
 
-Add the **Demo status** widget to a dashboard: it shows the live
-temperature of the weather station and the power of the office plug, the
-connection the plug currently uses (orange when degraded) and the observed
-location. Its **Identify the light** button makes the demo light signal
-itself.
+| Feature                | Echo | Group | Notes                                |
+| ---------------------- | ---- | ----- | ------------------------------------ |
+| Volume                 | yes  | no    | 0 to 100                             |
+| Do not disturb         | yes  | no    | on / off                             |
+| Play, pause, prev/next | yes¹ | yes   |                                      |
+| Playback state         | yes¹ | yes   | 1 while playing                      |
+| Now playing            | yes¹ | yes   | "Title — Artist"                     |
+| Notification           | yes  | yes   | for the core's "Play a notification" |
 
-## Troubleshooting
+¹ Echos with a music player (not the Echo Spot without music, for instance).
 
-The integration logs everything it does: check the integration logs from the
-Gladys UI (or `docker logs` on the host) with `LOG_LEVEL=debug` for the full
-detail.
+The states are read every 2 minutes by default (**Refresh interval** in the configuration), only for
+the Echos you added. Amazon blocks accounts that call it too often: do not go below the default
+without a reason.
+
+The **Language of names and messages** setting gives the names of the features of the Echos you add
+afterwards (Gladys keeps them once a device is added) and the language of the error messages.
+
+## In scenes
+
+**Make an Echo speak** (Amazon Echo actions):
+
+- **Echos**: one or several; a group speaks through its speakers.
+- **Text to say**: scene variables are allowed. Up to 1,000 characters; Alexa says long texts in
+  pieces of 250 characters.
+- **How**: _Speak_ (the Echo just talks) or _Announcement_ (a chime first, on every chosen Echo at
+  once).
+- **Volume** (optional): set before speaking, then the previous volume comes back.
+
+**Run an Alexa routine**: type the name of the routine as in the Alexa app, or the phrase that
+triggers it. The **List my Alexa routines** button of the configuration shows the names. Choose an
+Echo if the routine has steps acting on "the device you speak to".
+
+**Echo: Do Not Disturb**: on or off, on one or several Echos.
+
+**Play a notification** (the core's action, in the Music category) also works with an Echo, but
+needs **Gladys Plus**: the core turns your text into an audio file there and sends only its address
+(and not the volume). Alexa plays an audio file only in some formats; if your Echo stays silent,
+use **Make an Echo speak**, which sends the text itself.
+
+## Dashboard widget
+
+Add the **Echo player** widget and choose an Echo: title, artist, state, Do Not Disturb, the live
+volume and previous / play-pause / next buttons.
+
+## Limitations
+
+- Unofficial API: it can break when Amazon changes it.
+- No mute (the web API offers none) and no scene trigger (nothing reliable to start a scene on).
+- Two speeches sent at the same moment may interrupt each other.
+- Tested only against reconstructed answers, never on a real account yet.
+
+## Privacy
+
+The integration stores, in its own folder of Gladys (`/data`, readable by the integration only):
+the refresh token of the "Amazon Alexa" registration, the marketplace and your Amazon customer id.
+Nothing else, and never in the logs. It talks only to Amazon.

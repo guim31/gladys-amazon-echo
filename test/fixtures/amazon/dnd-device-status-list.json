@@ -1,0 +1,7 @@
+{
+  "doNotDisturbDeviceStatusList": [
+    { "deviceSerialNumber": "G0EXAMPLEDOT0001", "deviceType": "A32DOYMUN6DTXA", "enabled": false },
+    { "deviceSerialNumber": "G0EXAMPLESHOW001", "deviceType": "A15996VY63BQ2D", "enabled": true },
+    { "deviceSerialNumber": "G0EXAMPLESPOT001", "deviceType": "A10L5JEZTKKCZ8", "enabled": false }
+  ]
+}

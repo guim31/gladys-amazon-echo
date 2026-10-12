@@ -1,0 +1,43 @@
+{
+  "playerInfo": {
+    "hint": null,
+    "infoText": {
+      "header": "Discover Weekly",
+      "headerSubtext1": null,
+      "multiLineMode": false,
+      "subText1": "Example Artist",
+      "subText2": "Example Album",
+      "title": "Example Song"
+    },
+    "isPlayingInLemur": false,
+    "lemurVolume": null,
+    "mainArt": {
+      "altText": null,
+      "artType": null,
+      "contentType": null,
+      "url": "https://m.media-amazon.com/images/I/example.jpg"
+    },
+    "mediaId": "example-media-id",
+    "miniArt": null,
+    "playingInLemurId": null,
+    "progress": {
+      "allowScrubbing": true,
+      "mediaLength": 215,
+      "mediaProgress": 61,
+      "showTiming": true,
+      "visible": true
+    },
+    "provider": { "providerDisplayName": "Amazon Music", "providerName": "Amazon Music" },
+    "queueId": "example-queue-id",
+    "state": "PLAYING",
+    "transport": {
+      "closeButton": null,
+      "next": "ENABLED",
+      "playPause": "ENABLED",
+      "previous": "ENABLED",
+      "repeat": "HIDDEN",
+      "shuffle": "HIDDEN"
+    },
+    "volume": { "muted": false, "volume": 40 }
+  }
+}

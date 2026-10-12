@@ -1,0 +1,90 @@
+[
+  {
+    "automationId": "amzn1.alexa.automation.example-0001",
+    "name": "Good night",
+    "status": "ENABLED",
+    "triggers": [
+      {
+        "id": "example-trigger-1",
+        "type": "CustomUtterance",
+        "payload": {
+          "utterance": "good night",
+          "locale": "en-GB",
+          "customerId": "A1EXAMPLECUSTOMER"
+        }
+      }
+    ],
+    "sequence": {
+      "@type": "com.amazon.alexa.behaviors.model.Sequence",
+      "sequenceId": "amzn1.alexa.sequence.example-0001",
+      "startNode": {
+        "@type": "com.amazon.alexa.behaviors.model.SerialNode",
+        "name": null,
+        "nodesToExecute": [
+          {
+            "@type": "com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode",
+            "type": "Alexa.Speak",
+            "skillId": "amzn1.ask.1p.saysomething",
+            "operationPayload": {
+              "customerId": "ALEXA_CUSTOMER_ID",
+              "deviceSerialNumber": "ALEXA_CURRENT_DSN",
+              "deviceType": "ALEXA_CURRENT_DEVICE_TYPE",
+              "locale": "ALEXA_CURRENT_LOCALE",
+              "textToSpeak": "Sleep well"
+            }
+          },
+          {
+            "@type": "com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode",
+            "type": "Alexa.DeviceControls.Volume",
+            "skillId": "amzn1.ask.1p.alexadevicecontrols",
+            "operationPayload": {
+              "customerId": "ALEXA_CUSTOMER_ID",
+              "deviceSerialNumber": "G0EXAMPLESTUDIO1",
+              "deviceType": "A3RBAYBE7VM004",
+              "locale": "en-GB",
+              "value": 20
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "automationId": "amzn1.alexa.automation.example-0002",
+    "name": null,
+    "status": "ENABLED",
+    "triggers": [
+      {
+        "id": "example-trigger-2",
+        "type": "CustomUtterance",
+        "payload": { "utterances": ["movie time", "cinema"] }
+      }
+    ],
+    "sequence": {
+      "@type": "com.amazon.alexa.behaviors.model.Sequence",
+      "sequenceId": "amzn1.alexa.sequence.example-0002",
+      "startNode": {
+        "@type": "com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode",
+        "type": "Alexa.DeviceControls.Stop",
+        "skillId": "amzn1.ask.1p.alexadevicecontrols",
+        "operationPayload": {
+          "customerId": "ALEXA_CUSTOMER_ID",
+          "devices": [
+            { "deviceSerialNumber": "ALEXA_ALL_DSN", "deviceType": "ALEXA_ALL_DEVICE_TYPE" }
+          ],
+          "isAssociatedDevice": false
+        }
+      }
+    }
+  },
+  {
+    "automationId": "amzn1.alexa.automation.example-0003",
+    "name": "Morning",
+    "status": "DISABLED",
+    "triggers": [{ "id": "example-trigger-3", "type": "Alarm", "payload": {} }],
+    "sequence": {
+      "@type": "com.amazon.alexa.behaviors.model.Sequence",
+      "startNode": { "@type": "com.amazon.alexa.behaviors.model.SerialNode", "nodesToExecute": [] }
+    }
+  }
+]

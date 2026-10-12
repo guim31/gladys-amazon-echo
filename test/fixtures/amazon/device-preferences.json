@@ -1,0 +1,25 @@
+{
+  "devicePreferences": [
+    {
+      "deviceSerialNumber": "G0EXAMPLEDOT0001",
+      "deviceType": "A32DOYMUN6DTXA",
+      "locale": "fr-FR",
+      "timeZoneId": "Europe/Paris",
+      "deviceAccountId": "A2EXAMPLEACCOUNT01"
+    },
+    {
+      "deviceSerialNumber": "G0EXAMPLESHOW001",
+      "deviceType": "A15996VY63BQ2D",
+      "locale": "fr-FR",
+      "timeZoneId": "Europe/Paris",
+      "deviceAccountId": "A2EXAMPLEACCOUNT02"
+    },
+    {
+      "deviceSerialNumber": "G0EXAMPLESTUDIO1",
+      "deviceType": "A3RBAYBE7VM004",
+      "locale": "en-GB",
+      "timeZoneId": "Europe/Paris",
+      "deviceAccountId": "A2EXAMPLEACCOUNT03"
+    }
+  ]
+}
