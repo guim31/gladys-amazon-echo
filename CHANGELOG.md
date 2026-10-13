@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-10-13
+
 ### Changed
 
 - Quieter logs: a refresh writes nothing any more at the info level, and a failure that repeats (Amazon unreachable or limiting the requests, a volume, Do Not Disturb or player reading that fails) is logged once when it starts and once when it ends, instead of at every refresh. Set `LOG_LEVEL=debug` to see every refresh.
@@ -52,7 +54,8 @@ the notes of the version's GitHub Release.
 - Configuration buttons: list the Alexa routines, test the speech, sign out.
 - English, French, German and Spanish texts.
 
-[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.1...v1.0.2
