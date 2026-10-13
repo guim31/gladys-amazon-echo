@@ -48,6 +48,7 @@ src/config.js, src/regions.js     DEFAULT_CONFIG (mirrors the manifest) / Amazon
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
 docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
 test/                             node --test; helpers/fakeGladys.js and helpers/fakeAmazon.js
+test/polling.test.js              refresh timer and logs, on the SDK's createFakeGladys
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -77,8 +78,9 @@ test/                             node --test; helpers/fakeGladys.js and helpers
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in English, French, German and Spanish: action
+  messages, manifest texts, widget contents, feature names. The store publishes
+  only `docs/en.md` and `docs/fr.md`, kept in sync.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -116,6 +118,12 @@ code de ce dépôt. Compléter ce fichier quand un nouveau piège est découvert
   15000, 30000, 60000). Le template publie `poll_frequency: 300` sans `should_poll` : c'est faux,
   le cœur répond 400 à la découverte. Pour une cadence hors liste, publier `should_poll: false` et
   pousser les états depuis le conteneur, en gardant un `onPoll` de repli.
+- **Gladys 5.2.0 (issue GladysAssistant/Gladys#3198)** : un appareil n'est sondé que si
+  `should_poll: true` **et** `poll_frequency` valide, et les appareils **déjà créés** sans
+  `should_poll` ne le seront jamais, même après le correctif (#3199). Ici, les Echo sont publiés
+  `should_poll: false` et lus par le minuteur de `src/service.js`, qui part de `gladys.devices`
+  (tenu à jour par le SDK à chaque connexion et à chaque création) : il lit donc aussi les Echo
+  créés par les anciennes versions. `test/polling.test.js` le vérifie, `onPoll` compris.
 - **`min` et `max` sont NOT NULL** dans `t_device_feature`, y compris pour `text/text` : sans eux,
   « Ajouter à Gladys » échoue en HTTP 422. Mettre 0/0, comme Zigbee2MQTT.
 - Un état publié sur une fonctionnalité **pas encore ajoutée** dans Gladys reçoit un 200 puis est
@@ -162,7 +170,16 @@ code de ce dépôt. Compléter ce fichier quand un nouveau piège est découvert
   (`containers[].ports`, `{{port:<name>}}` dans les sections) le peut en 5.1.4, mais
   `release.mjs` ne met à jour que le `docker_image` **de premier niveau** : un sous-conteneur qui
   reprendrait l'image de l'intégration resterait figé sur une ancienne version.
-- Le SDK publié 0.14.0 n'exporte pas `DEVICE_POLL_FREQUENCIES`.
+- Depuis le SDK 0.15 : `DEVICE_POLL_FREQUENCIES`, `publishChangedStates` et
+  `@gladysassistant/integration-sdk/testing` (`createFakeGladys`) existent. Le dépôt garde son
+  `StateTracker` (oubli à la création / suppression, déjà testé) et son faux Gladys maison pour
+  les suites existantes ; les nouveaux tests peuvent prendre `createFakeGladys`, qui valide en plus
+  les appareils découverts et les états comme le cœur.
+- **Journaux** : rien en `info` par rafraîchissement, par état ou par lecture ; une ligne `debug`
+  par cycle (`LOG_LEVEL=debug`). Un échec qui se répète (Amazon injoignable, limité, cookie refusé,
+  lecture du volume, du « Ne pas déranger » ou d'un lecteur) passe par `problem()` / `recovered()`
+  de `src/service.js` : une ligne au premier échec (et si sa nature change), une au retour. Les
+  messages d'`AmazonError` ne portent ni cookie, ni jeton, ni identifiant de compte.
 - `test/i18n.test.js` refuse tout « Sie » capitalisé, y compris « Sie kann… » (= elle) en début de
   phrase : reformuler plutôt qu'assouplir le test.
 - Les textes de `section` gardent les `\n` (rendu `pre-wrap`) : une procédure numérotée y tient.
