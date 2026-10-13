@@ -10,6 +10,12 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- Quieter logs: a refresh writes nothing any more at the info level, and a failure that repeats (Amazon unreachable or limiting the requests, a volume, Do Not Disturb or player reading that fails) is logged once when it starts and once when it ends, instead of at every refresh. Set `LOG_LEVEL=debug` to see every refresh.
+- Integration SDK 0.15 and up-to-date development tools.
+- Checked against Gladys 5.2.0, which only polls the devices created with `should_poll: true` (Gladys#3198): nothing to do on your side, the Echos already refresh through the integration's own timer, including those added with an older version, and a test now guards it.
+
 ## [1.0.4] - 2026-10-12
 
 ### Fixed

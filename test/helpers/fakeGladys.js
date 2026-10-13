@@ -1,7 +1,10 @@
 // -----------------------------------------------------------------------------
-// In-memory stand-in for the Gladys SDK object (the published SDK 0.14.0 has
-// no `/testing` export). It records what the integration sends to Gladys and
-// the handlers it registers, so a test can play Gladys' side:
+// In-memory stand-in for the Gladys SDK object, written before the SDK 0.15
+// shipped `@gladysassistant/integration-sdk/testing`. Kept for the existing
+// suites (synchronous handlers, simple records); new tests may use the SDK's
+// createFakeGladys, as test/polling.test.js does. It records what the
+// integration sends to Gladys and the handlers it registers, so a test can
+// play Gladys' side:
 //   gladys.handlers.setValue(...), gladys.actions.finish_sign_in(...)…
 // External ids have the real format: ext:<selector>:<type>:<platform id>.
 // -----------------------------------------------------------------------------

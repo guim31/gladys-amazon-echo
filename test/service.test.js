@@ -397,6 +397,41 @@ test('an unreachable Amazon is retried; a refused sign-in stops everything', asy
   });
 });
 
+test('a failure that repeats is logged once, and its end once', async () => {
+  const { gladys, amazon, timers, logger } = await started();
+  const loud = () => logger.lines.filter((line) => !line.startsWith('debug '));
+  assert.deepEqual(loud(), []);
+  // An optional reading fails three times in a row, then works again.
+  amazon.override('GET /api/devices/deviceType/dsn/audio/v1/allDeviceVolumes', () => ({
+    status: 500,
+    body: {},
+  }));
+  for (let i = 0; i < 3; i += 1) await timers.fire();
+  amazon.reset('GET /api/devices/deviceType/dsn/audio/v1/allDeviceVolumes');
+  await timers.fire();
+  await timers.fire();
+  // Amazon unreachable: three failed refreshes (the interval doubles), then back.
+  amazon.override('GET /api/dnd/device-status-list', () => new TypeError('fetch failed'));
+  amazon.override('GET /api/np/player', () => new TypeError('fetch failed'));
+  amazon.override('GET /api/devices-v2/device', () => new TypeError('fetch failed'));
+  gladys.devices = [];
+  for (let i = 0; i < 3; i += 1) await gladys.handlers.scanRequest();
+  amazon.reset('GET /api/dnd/device-status-list');
+  amazon.reset('GET /api/np/player');
+  amazon.reset('GET /api/devices-v2/device');
+  await gladys.handlers.scanRequest();
+  await gladys.handlers.scanRequest();
+  assert.deepEqual(
+    loud().map((line) => line.split(':')[0]),
+    [
+      'warn Volume reading failed',
+      'info Volume reading working again',
+      'warn Amazon refresh failed',
+      'info Amazon refresh working again',
+    ],
+  );
+});
+
 test('signing out deregisters Gladys and deletes the credentials', async () => {
   const { gladys, amazon, dir, timers } = await started();
   const message = await gladys.actions.sign_out({});

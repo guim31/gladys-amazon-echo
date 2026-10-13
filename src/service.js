@@ -10,7 +10,10 @@
 //     Do Not Disturb, and one per added Echo with a music player. Only the
 //     Echos added in Gladys are read, and only the changed states published;
 //   - failures: a throttled or unreachable Amazon doubles the interval (up to
-//     15 minutes); a refused refresh token stops everything until a sign-in.
+//     15 minutes); a refused refresh token stops everything until a sign-in;
+//   - logs: nothing at info per refresh; a failure that repeats is written
+//     once when it starts and once when it ends (see `problem`), never with a
+//     cookie, a token or an account id (AmazonError messages carry none).
 // -----------------------------------------------------------------------------
 
 import { createLogger } from '@gladysassistant/integration-sdk';
@@ -88,6 +91,9 @@ export class EchoService {
     this.backoff = 1;
     this.status = null;
     this.refreshing = null;
+    // What is failing now, by key (refresh, volumes, player of an Echo…):
+    // the kind of the error, so a repeated failure is logged once.
+    this.problems = new Map();
   }
 
   get language() {
@@ -156,6 +162,26 @@ export class EchoService {
     }
   }
 
+  // --- Logs of repeated failures -------------------------------------------
+
+  /** Log a failure of `key` once, and again only if its kind changes. */
+  problem(key, label, err) {
+    const kind = err instanceof AmazonError ? err.kind : 'bug';
+    if (this.problems.get(key) === kind) {
+      this.logger.debug(`${label} still failing: ${err.message}`);
+      return;
+    }
+    this.problems.set(key, kind);
+    if (kind === 'bug') this.logger.error(`${label} failed`, err);
+    else this.logger.warn(`${label} failed: ${err.message}`);
+  }
+
+  /** `key` works again: say so once, if it was failing. */
+  recovered(key, label) {
+    if (!this.problems.delete(key)) return;
+    this.logger.info(`${label} working again`);
+  }
+
   // --- Refresh ---------------------------------------------------------------
 
   /** One refresh; concurrent calls share it. Never throws. */
@@ -175,8 +201,11 @@ export class EchoService {
         await this.loadDevices();
         await this.publishDiscovered();
       }
-      await this.readStates(this.addedEchos());
+      const echos = this.addedEchos();
+      const published = await this.readStates(echos);
+      this.logger.debug(`Refresh: ${echos.length} Echo(s) read, ${published} state(s) changed`);
       this.backoff = 1;
+      this.recovered('refresh', 'Amazon refresh');
       await this.setStatus('connected');
     } catch (err) {
       await this.failed(err);
@@ -184,11 +213,8 @@ export class EchoService {
   }
 
   async failed(err) {
-    if (!(err instanceof AmazonError)) {
-      this.logger.error('Refresh failed', err);
-      return;
-    }
-    this.logger.warn(`Refresh failed: ${err.message}`);
+    this.problem('refresh', 'Amazon refresh', err);
+    if (!(err instanceof AmazonError)) return;
     if (err.kind === 'signed_out') {
       this.client = null;
       this.stop();
@@ -204,12 +230,14 @@ export class EchoService {
 
   async loadDevices() {
     const raw = await this.client.getDevices();
-    let locales = new Map();
+    let locales;
     try {
       locales = await this.client.getLocales();
+      this.recovered('locales', 'Device preferences reading');
     } catch (err) {
       if (err.kind === 'throttled' || err.kind === 'signed_out') throw err;
-      this.logger.warn(`Device preferences unavailable, default locale used: ${err.message}`);
+      this.problem('locales', 'Device preferences reading (default locale used)', err);
+      locales = new Map();
     }
     this.echos = echosOf(raw, locales, REGIONS[this.client.domain]);
     this.devicesLoadedAt = this.now();
@@ -232,40 +260,52 @@ export class EchoService {
     return this.echos.find((echo) => externalIdsOf(this.gladys, echo).device === externalId);
   }
 
-  /** Read and publish the states of `echos`. A failing optional read is skipped. */
+  /**
+   * Read and publish the states of `echos`; resolves with the number of
+   * states that changed. A failing optional read is skipped.
+   */
   async readStates(echos) {
-    if (!this.client || echos.length === 0) return;
+    if (!this.client || echos.length === 0) return 0;
     const speakers = echos.filter((echo) => !echo.isGroup);
-    const optional = async (read, what) => {
+    const optional = async (read, key, label) => {
       try {
-        return await read();
+        const value = await read();
+        this.recovered(key, label);
+        return value;
       } catch (err) {
         if (!(err instanceof AmazonError) || ['throttled', 'signed_out'].includes(err.kind)) {
           throw err;
         }
-        this.logger.warn(`${what} unavailable: ${err.message}`);
+        this.problem(key, label, err);
         return null;
       }
     };
     const volumes = speakers.length
-      ? await optional(() => this.client.getVolumes(), 'Volumes')
+      ? await optional(() => this.client.getVolumes(), 'volumes', 'Volume reading')
       : null;
-    const dnd = speakers.length ? await optional(() => this.client.getDoNotDisturb(), 'DND') : null;
+    const dnd = speakers.length
+      ? await optional(() => this.client.getDoNotDisturb(), 'dnd', 'Do Not Disturb reading')
+      : null;
     const states = [];
     for (const echo of echos) {
       const reading = { ...this.readings.get(echo.serialNumber) };
       if (volumes?.has(echo.serialNumber)) reading.volume = volumes.get(echo.serialNumber).volume;
       if (dnd?.has(echo.serialNumber)) reading.doNotDisturb = dnd.get(echo.serialNumber);
       if (echo.hasPlayer && echo.online) {
-        const player = await optional(() => this.client.getPlayer(echo), `Player of ${echo.name}`);
+        const player = await optional(
+          () => this.client.getPlayer(echo),
+          `player:${echo.serialNumber}`,
+          `Player reading of ${echo.name}`,
+        );
         if (player !== null || reading.player !== undefined) reading.player = player;
       }
       this.readings.set(echo.serialNumber, reading);
       states.push(...statesOf(this.gladys, echo, reading, this.language));
     }
-    await this.publish(states);
+    return this.publish(states);
   }
 
+  /** Publish the states that changed; resolves with their number. */
   async publish(states) {
     const changed = this.tracker.changed(states);
     for (let i = 0; i < changed.length; i += MAX_STATES_PER_REQUEST) {
@@ -274,6 +314,7 @@ export class EchoService {
       this.tracker.remember(batch);
     }
     if (changed.length > 0) this.gladys.requestWidgetRefresh(PLAYER_WIDGET);
+    return changed.length;
   }
 
   /** A device was added in Gladys: its states must be sent again, now. */
@@ -514,6 +555,7 @@ export class EchoService {
     this.stop();
     this.status = null;
     this.routines = null;
+    this.problems.clear();
     this.useCredentials(credentials);
     await this.refresh({ devices: true });
     this.schedule();
@@ -531,6 +573,7 @@ export class EchoService {
     this.readings.clear();
     this.tracker.forget();
     this.routines = null;
+    this.problems.clear();
     await this.setStatus('signed_out');
     return MESSAGES.sign_in.signed_out;
   }
