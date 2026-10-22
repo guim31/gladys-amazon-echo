@@ -85,7 +85,9 @@ afterwards (Gladys keeps them once a device is added) and the language of the er
 - **Text to say**: scene variables are allowed. Up to 1,000 characters; Alexa says long texts in
   pieces of 250 characters.
 - **How**: _Speak_ (the Echo just talks) or _Announcement_ (a chime first, on every chosen Echo at
-  once).
+  once). An announcement always carries the name of the Alexa account. Devices with Alexa built in
+  that are not Echo (the Devialet player of the Freebox Delta, for instance) accept the
+  announcement but stay silent, without any error: use _Speak_ on them.
 - **Volume** (optional): set before speaking, then the previous volume comes back.
 
 **Run an Alexa routine**: type the name of the routine as in the Alexa app, or the phrase that

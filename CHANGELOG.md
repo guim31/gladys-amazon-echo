@@ -10,6 +10,12 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- Docs: announcements stay silent on devices with Alexa built in that are not
+  Echo (Devialet player of the Freebox Delta); use "Speak" on them (forum
+  t/11056/17).
+
 ## [1.0.5] - 2026-10-13
 
 ### Changed

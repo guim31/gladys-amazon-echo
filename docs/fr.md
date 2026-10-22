@@ -89,7 +89,9 @@ ensuite (Gladys les garde une fois l'appareil ajouté) et la langue des messages
 - **Texte à dire** : les variables de scène sont permises. Jusqu'à 1 000 caractères ; Alexa dit
   les textes longs en morceaux de 250 caractères.
 - **Comment** : _Parler_ (l'Echo parle simplement) ou _Annonce_ (un carillon d'abord, sur tous les
-  Echo choisis à la fois).
+  Echo choisis à la fois). Une annonce porte toujours le prénom du compte Alexa. Les appareils
+  « Alexa intégrée » qui ne sont pas des Echo (le Player Devialet de la Freebox Delta, par exemple)
+  acceptent l'annonce mais restent muets, sans erreur : utilisez _Parler_ avec eux.
 - **Volume** (facultatif) : réglé avant de parler, puis le volume précédent revient.
 
 **Lancer une routine Alexa** : tapez le nom de la routine comme dans l'application Alexa, ou la
