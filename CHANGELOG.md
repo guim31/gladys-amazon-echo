@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-10-22
+
 ### Changed
 
 - Docs: announcements stay silent on devices with Alexa built in that are not
@@ -60,7 +62,8 @@ the notes of the version's GitHub Release.
 - Configuration buttons: list the Alexa routines, test the speech, sign out.
 - English, French, German and Spanish texts.
 
-[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.5...HEAD
+[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.6...HEAD
+[1.0.6]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.2...v1.0.3
