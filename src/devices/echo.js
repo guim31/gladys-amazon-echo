@@ -135,7 +135,7 @@ const M = DEVICE_FEATURE_TYPES.MUSIC;
 // key -> [category, type, read_only, min, max, keep_history, extra fields]
 // (the core forces keep_history to false on the whole music category, 5.3)
 const SPECS = {
-  [FEATURES.VOLUME]: [MUSIC, M.VOLUME, false, 0, 100, true, FEEDBACK],
+  [FEATURES.VOLUME]: [MUSIC, M.VOLUME, false, 0, 100, false, FEEDBACK],
   [FEATURES.PLAY]: [MUSIC, M.PLAY, false, 0, 1, false],
   [FEATURES.PAUSE]: [MUSIC, M.PAUSE, false, 0, 1, false],
   [FEATURES.PREVIOUS]: [MUSIC, M.PREVIOUS, false, 0, 1, false],
@@ -148,7 +148,7 @@ const SPECS = {
     false,
     0,
     MUSIC_PLAYBACK_STATE.IDLE,
-    true,
+    false,
     FEEDBACK,
   ],
   // min/max are NOT NULL in the core, text included: 0/0.

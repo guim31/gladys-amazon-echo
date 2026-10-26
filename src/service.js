@@ -52,8 +52,11 @@ const DEVICE_LIST_MAX_AGE_MS = 30 * 60 * 1000;
 const ROUTINES_MAX_AGE_MS = 5 * 60 * 1000;
 const SIGN_IN_MAX_AGE_MS = 60 * 60 * 1000;
 const MAX_DELAY_MS = 15 * 60 * 1000;
-// After a media command, the player is read again once it had time to move.
+// After a media command, the player is read again once it had time to move,
+// and once more later when Amazon is slow (Gladys 5.3 waits 15 s for the
+// confirmation of a playback state write).
 const PLAYER_SETTLE_MS = 3000;
+const PLAYER_LATE_MS = 10_000;
 const MAX_STATES_PER_REQUEST = 100;
 // Gladys waits 15 s for an artwork; the core refuses one above 300 KB.
 const ARTWORK_TIMEOUT_MS = 10_000;
@@ -288,7 +291,8 @@ export class EchoService {
           throw err;
         }
         this.problem(key, label, err);
-        return null;
+        // Not null: a player read as null is "nothing loaded".
+        return undefined;
       }
     };
     const volumes = speakers.length
@@ -309,7 +313,9 @@ export class EchoService {
           `player:${echo.serialNumber}`,
           `Player reading of ${echo.name}`,
         );
-        if (player !== null || reading.player !== undefined) reading.player = player;
+        // A failed reading keeps the previous one: one Amazon error must not
+        // publish "stopped" and clear the track.
+        if (player !== undefined) reading.player = player;
       }
       this.readings.set(echo.serialNumber, reading);
       states.push(...statesOf(this.gladys, echo, reading, this.language));
@@ -485,9 +491,13 @@ export class EchoService {
     } catch (err) {
       throw new Error(`Artwork ${key}: ${err.message}`, { cause: err });
     }
-    if (!response.ok) {
+    // A redirection must not lead the container to plain http (a LAN address).
+    const redirected = response.url && !/^https:\/\//i.test(response.url);
+    if (!response.ok || redirected) {
       await response.body?.cancel().catch(() => {});
-      throw new Error(`Artwork ${key}: HTTP ${response.status}`);
+      throw new Error(
+        `Artwork ${key}: ${redirected ? 'redirected to http' : `HTTP ${response.status}`}`,
+      );
     }
     const chunks = [];
     let size = 0;
@@ -502,11 +512,22 @@ export class EchoService {
     return Buffer.concat(chunks, size).toString('base64');
   }
 
+  /**
+   * Read the Echo again after a command: at 3 s, publishing its whole
+   * now-playing even unchanged (the snapshot is forgotten), so a playback
+   * state write is confirmed or corrected; at 10 s, what changed since.
+   */
   readSoon(echo) {
-    const timer = this.timers.set(() => {
+    const read = (forget) => () => {
+      if (forget) this.gladys.forgetPublishedStates(externalIdsOf(this.gladys, echo).device);
       this.readStates([echo]).catch((err) => this.failed(err));
-    }, PLAYER_SETTLE_MS);
-    timer?.unref?.();
+    };
+    for (const [delay, forget] of [
+      [PLAYER_SETTLE_MS, true],
+      [PLAYER_LATE_MS, false],
+    ]) {
+      this.timers.set(read(forget), delay)?.unref?.();
+    }
   }
 
   /**

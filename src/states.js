@@ -83,7 +83,8 @@ export function nowPlayingText(playback, language) {
  * The Gladys 5.3 "now playing" of one Echo, for publishNowPlaying (which
  * diffs it): volume, and for a player the playback state and the track.
  * Nothing loaded clears the texts and the artwork EXPLICITLY. A live stream
- * (no length) gets duration 0 and no position.
+ * (no length) gets duration 0 and no position, and so does a player playing
+ * without a track.
  * @returns {object | null} null when there is nothing to publish
  */
 export function nowPlayingOf(echo, reading) {
@@ -100,8 +101,11 @@ export function nowPlayingOf(echo, reading) {
     values.album = loaded ? playback.album : '';
     values.artwork_url = loaded ? playback.artworkUrl : null;
     values.duration = loaded ? (playback.duration ?? 0) : 0;
-    if (!loaded) values.position = 0;
-    else if (values.duration > 0 && playback.position !== null) {
+    // A player without a track (Bluetooth: PLAYING, no title) has no
+    // position: a 0 would be republished at each reading (no duration bounds
+    // what Gladys extrapolates).
+    if (playback.state === MUSIC_PLAYBACK_STATE.IDLE) values.position = 0;
+    else if (loaded && values.duration > 0 && playback.position !== null) {
       values.position = Math.min(playback.position, values.duration);
     }
   }

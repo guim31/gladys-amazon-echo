@@ -24,8 +24,10 @@ the notes of the version's GitHub Release.
 - Gladys 5.3.0 or later is required.
 - The playback state is 2 (stopped) when nothing is loaded, instead of 0: a scene waiting for 0
   on a stop must now wait for 2.
-- Volume and playback state are confirmed by the Echo (`has_feedback`) and published through
-  `publishNowPlaying`. The "Now playing" text of 1.0 stays (it doubles the title, for existing
+- Volume (published once Amazon accepted the command) and playback state (read back from the
+  Echo 3 s and 10 s after a command) are `has_feedback` features, published through
+  `publishNowPlaying`. A failed reading of the player keeps the previous track instead of
+  publishing "nothing playing". The "Now playing" text of 1.0 stays (it doubles the title, for existing
   scenes and dashboards).
 
 ## [1.0.6] - 2026-10-22

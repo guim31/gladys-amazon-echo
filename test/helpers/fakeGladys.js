@@ -78,6 +78,10 @@ export function createFakeGladys({ config = {}, devices = [] } = {}) {
       gladys.nowPlaying.set(deviceExternalId, { ...previous, ...Object.fromEntries(changed) });
       return { success: true, count: changed.length };
     },
+    forgetPublishedStates(externalId) {
+      if (externalId === undefined) gladys.nowPlaying.clear();
+      else gladys.nowPlaying.delete(externalId);
+    },
     async setConnectionStatus(connected, message) {
       gladys.connectionStatuses.push({ connected, message });
     },

@@ -183,7 +183,7 @@ test('volume, transport and Do Not Disturb commands', async () => {
   timers.pending.clear();
   await gladys.handlers.setValue(device, { external_id: dot.feature('pause') }, 1);
   assert.equal(amazon.calls('POST', '/api/np/command')[0].body.type, 'PauseCommand');
-  assert.deepEqual(timers.delays(), [3000], 'the player is read again soon');
+  assert.deepEqual(timers.delays(), [3000, 10000], 'the player is read again soon, then later');
 
   await gladys.handlers.setValue(device, { external_id: dot.feature('do_not_disturb') }, 1);
   assert.equal(amazon.calls('PUT', '/api/dnd/status')[0].body.enabled, true);

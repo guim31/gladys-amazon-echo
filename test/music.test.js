@@ -273,3 +273,77 @@ test('the volume set from Gladys is published at once, as a music state', async 
   assert.equal(ack.success, true);
   assert.equal(last(SERIALS.DOT, 'volume'), 65);
 });
+
+test('one failed reading of the player keeps the track (no "stopped", no cleared title)', async () => {
+  const { gladys, amazon, timers, last } = await started({
+    players: { [SERIALS.DOT]: fixture('np-player-spotify-playing') },
+  });
+  const before = gladys.fake.states.length;
+  amazon.override('GET /api/np/player', () => ({ status: 500, body: { message: 'Error' } }));
+  await timers.fire();
+  assert.equal(gladys.fake.states.length, before, 'nothing published');
+  assert.equal(last(SERIALS.DOT, 'playback_state'), MUSIC_PLAYBACK_STATE.PLAYING);
+  assert.equal(last(SERIALS.DOT, 'title'), 'Bro Hymn');
+});
+
+test('a playback state write is confirmed even when Amazon has not moved yet', async () => {
+  const { gladys, timers, device, feature, ids } = await started({
+    players: { [SERIALS.DOT]: fixture('np-player-spotify-playing') },
+  });
+  const id = ids(SERIALS.DOT).feature('playback_state');
+  timers.pending.clear();
+  const ack = await gladys.fake.setValue(
+    device(SERIALS.DOT),
+    feature(SERIALS.DOT, 'playback_state'),
+    0,
+  );
+  assert.equal(ack.success, true);
+  assert.deepEqual(timers.delays(), [3000, 10000]);
+  const before = gladys.fake.states.length;
+  // The reading 3 s later still says PLAYING: published anyway, so Gladys
+  // shows what the Echo does instead of waiting 15 s for nothing.
+  await timers.fire();
+  const after = gladys.fake.states.slice(before).filter((s) => s.device_feature_external_id === id);
+  assert.deepEqual(
+    after.map((s) => s.state),
+    [MUSIC_PLAYBACK_STATE.PLAYING],
+  );
+});
+
+test('a player playing without a track (Bluetooth) has no position, published once', async () => {
+  const bluetooth = fixture('np-player-spotify-playing');
+  bluetooth.playerInfo.infoText = null;
+  bluetooth.playerInfo.mainArt = null;
+  bluetooth.playerInfo.progress = null;
+  const { gladys, timers, last, ids } = await started({ players: { [SERIALS.DOT]: bluetooth } });
+  assert.equal(last(SERIALS.DOT, 'playback_state'), MUSIC_PLAYBACK_STATE.PLAYING);
+  assert.equal(last(SERIALS.DOT, 'title'), '');
+  assert.equal(last(SERIALS.DOT, 'position'), undefined);
+  const before = gladys.fake.states.length;
+  await timers.fire();
+  await timers.fire();
+  assert.equal(gladys.fake.states.length, before);
+  assert.ok(
+    !gladys.fake.states.some(
+      (s) => s.device_feature_external_id === ids(SERIALS.DOT).feature('position'),
+    ),
+  );
+});
+
+test('music states go through one channel: a volume change is sent once', async () => {
+  const { gladys, amazon, timers, ids } = await started();
+  const volumes = fixture('all-device-volumes');
+  for (const v of volumes.volumes) if (v.dsn === SERIALS.DOT) v.speakerVolume = 12;
+  amazon.override('GET /api/devices/deviceType/dsn/audio/v1/allDeviceVolumes', () => ({
+    body: volumes,
+  }));
+  const before = gladys.fake.states.length;
+  await timers.fire();
+  const sent = gladys.fake.states
+    .slice(before)
+    .filter((s) => s.device_feature_external_id === ids(SERIALS.DOT).feature('volume'));
+  assert.deepEqual(
+    sent.map((s) => s.state),
+    [12],
+  );
+});
