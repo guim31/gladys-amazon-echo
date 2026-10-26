@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-26
+
 ### Added
 
 - Gladys 5.3 music player (SDK 0.16): Echos and groups with a music player get title, artist,
@@ -82,7 +84,8 @@ the notes of the version's GitHub Release.
 - Configuration buttons: list the Alexa routines, test the speech, sign out.
 - English, French, German and Spanish texts.
 
-[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.6...HEAD
+[Unreleased]: https://github.com/guim31/gladys-amazon-echo/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.6...v1.1.0
 [1.0.6]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/guim31/gladys-amazon-echo/compare/v1.0.3...v1.0.4
