@@ -10,6 +10,24 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- Gladys 5.3 music player (SDK 0.16): Echos and groups with a music player get title, artist,
+  album, artwork, duration and position, published with `publishNowPlaying`; the core's Music
+  widget shows them. The artwork is served by the integration (`"music": {}` in the manifest: no
+  catalog, the Alexa web API has none). Echos added before this version: **Discover → Update**.
+- The playback state is writable: 0 pauses, 1 plays, 2 stops the Echo ("Alexa, stop"; a group
+  through its speakers).
+
+### Changed
+
+- Gladys 5.3.0 or later is required.
+- The playback state is 2 (stopped) when nothing is loaded, instead of 0: a scene waiting for 0
+  on a stop must now wait for 2.
+- Volume and playback state are confirmed by the Echo (`has_feedback`) and published through
+  `publishNowPlaying`. The "Now playing" text of 1.0 stays (it doubles the title, for existing
+  scenes and dashboards).
+
 ## [1.0.6] - 2026-10-22
 
 ### Changed

@@ -26,6 +26,8 @@ voice): here, Gladys drives the Echos.
   - **volume** (0–100) and **Do Not Disturb** (not on groups: Amazon keeps them per speaker);
   - **play, pause, previous, next**, **playback state** and the **title playing** (devices with a
     music player, groups included);
+  - the **Gladys 5.3 music player**: title, artist, album, artwork, duration and position, and a
+    writable playback state (pause / play / stop), shown by the core's Music widget;
   - **notification**: the core's "Play a notification" scene action targets it.
 - **Scene actions**
   - **Make an Echo speak**: a text (scene variables allowed), on one or several Echos, as plain
@@ -34,7 +36,8 @@ voice): here, Gladys drives the Echos.
   - **Run an Alexa routine**, by its name or by its spoken phrase, optionally on a chosen Echo (for
     the "device you speak to" steps).
   - **Do Not Disturb** on or off, on one or several Echos.
-- **Dashboard widget "Echo player"**: title, artist, state, Do Not Disturb, live volume and
+- **Dashboard widgets**: the core's **Music** widget (Gladys 5.3), and the integration's own
+  **"Echo player"**: title, artist, state, Do Not Disturb, live volume and
   previous / play-pause / next buttons.
 - **Configuration buttons**: finish the sign-in, list the Alexa routines, make an Echo speak (test),
   sign out.
@@ -107,6 +110,14 @@ The full step-by-step guide, with troubleshooting, is in [`docs/en.md`](docs/en.
 - **Groups** cannot speak by themselves: speech and announcements go to their speakers. A group has
   no volume nor Do Not Disturb feature.
 - **No mute**: the web API exposes none.
+- **Gladys 5.3 music player**: no seek (the web API has no such command), no shuffle nor repeat
+  (the commands exist, but `/api/np/player` does not report the mode: only the push channel of the
+  Alexa app does, as Alexa Media Player notes), no queue nor catalog (`"music": {}`: artwork only).
+  Echos added before 1.1.0 get the new features through **Discover → Update**. The playback state
+  is 2 (stopped) when nothing is loaded, 0 before 1.1.0.
+- **Artworks** are the URLs Amazon gives (Amazon Music, Spotify CDNs), read by the container (the
+  browser never loads them) up to the 300 KB Gladys accepts; an Amazon Music original (up to
+  2560 px) is asked at 400 px.
 - **Two quick speeches** in a row may interrupt each other: Amazon plays the latest sequence.
 - **Routines** are picked by name in a text field (Gladys lists only devices dynamically): the
   **List my Alexa routines** button shows the exact names.

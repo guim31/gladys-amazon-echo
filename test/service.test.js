@@ -107,16 +107,21 @@ test('a refresh reads only the added Echos and publishes their states', async ()
   assert.equal(gladys.lastState(dot.feature('now_playing')), 'Example Song — Example Artist');
   assert.equal(gladys.lastState(show.feature('volume')), 25);
   assert.equal(gladys.lastState(show.feature('do_not_disturb')), 1);
-  assert.equal(gladys.lastState(show.feature('playback_state')), 0);
+  // Nothing loaded: IDLE (2) since 1.1.0, texts cleared explicitly.
+  assert.equal(gladys.lastState(show.feature('playback_state')), 2);
   assert.equal(gladys.lastState(show.feature('now_playing')), 'Nothing playing');
-  assert.equal(gladys.lastState(group.feature('playback_state')), 0);
+  assert.equal(gladys.lastState(show.feature('title')), '');
+  assert.equal(gladys.lastState(group.feature('playback_state')), 2);
   assert.equal(gladys.lastState(group.feature('volume')), undefined);
   // The Spot has no player; the Studio is offline; the soundbar is not added.
   const players = amazon.calls('GET', '/api/np/player').map((r) => r.query.deviceSerialNumber);
   assert.deepEqual(players.sort(), [SERIALS.DOT, SERIALS.GROUP, SERIALS.SHOW].sort());
-  // A text state is never empty, every state has a value.
+  // A text/text state is never empty (the core drops it), every state has a
+  // value; the music strings are cleared with an empty text.
   for (const state of gladys.published) {
-    assert.ok(state.text === undefined ? Number.isFinite(state.state) : state.text.length > 0);
+    if (state.device_feature_external_id.endsWith(':now_playing')) {
+      assert.ok(state.text.length > 0);
+    } else if (state.text === undefined) assert.ok(Number.isFinite(state.state));
   }
   assert.ok(gladys.widgetRefreshes.includes('player'));
 });
@@ -134,7 +139,9 @@ test('a refresh publishes only what changed', async () => {
       .slice(before)
       .map((s) => s.device_feature_external_id)
       .sort(),
-    [dot.feature('now_playing'), dot.feature('playback_state')].sort(),
+    ['now_playing', 'playback_state', 'title', 'artist', 'album', 'artwork', 'duration', 'position']
+      .map((key) => dot.feature(key))
+      .sort(),
   );
   // The device list is not fetched again before 30 minutes.
   assert.equal(amazon.calls('GET', '/api/devices-v2/device').length, 1);

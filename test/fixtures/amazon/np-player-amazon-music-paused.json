@@ -1,0 +1,92 @@
+{
+  "playerInfo": {
+    "hint": null,
+    "infoText": {
+      "header": null,
+      "headerSubtext1": null,
+      "multiLineMode": false,
+      "subText1": "Volbeat",
+      "subText2": "Outlaw Gentlemen & Shady Ladies (Deluxe Version)",
+      "title": "Lola Montez"
+    },
+    "isPlayingInLemur": false,
+    "lemurVolume": null,
+    "lyrics": null,
+    "mainArt": {
+      "altText": "Album Art",
+      "artType": "UrlArtSource",
+      "contentType": "image/jpeg",
+      "url": "https://m.media-amazon.com/images/I/51nnhqB34JL._UL600_.jpg"
+    },
+    "mediaId": "ea28cedf-3717-4b95-864f-e60533d7cad0:1",
+    "miniArt": {
+      "altText": "Album Art",
+      "artType": "UrlArtSource",
+      "contentType": "image/jpeg",
+      "url": "https://m.media-amazon.com/images/I/51nnhqB34JL._UL48_.jpg"
+    },
+    "miniInfoText": {
+      "header": null,
+      "headerSubtext1": null,
+      "multiLineMode": false,
+      "subText1": "Volbeat",
+      "subText2": "Amazon Music",
+      "title": "Lola Montez"
+    },
+    "playbackSource": null,
+    "playingInLemurId": null,
+    "progress": {
+      "allowScrubbing": true,
+      "locationInfo": null,
+      "mediaLength": 268,
+      "mediaProgress": 61,
+      "showTiming": true,
+      "visible": true
+    },
+    "provider": {
+      "artOverlay": null,
+      "fallbackMainArt": {
+        "altText": null,
+        "artType": "IconArtSource",
+        "iconId": "music-no-art",
+        "iconStyles": null
+      },
+      "providerDisplayName": null,
+      "providerLogo": {
+        "altText": "Amazon Music",
+        "artType": "IconArtSource",
+        "iconId": "amazon-music",
+        "iconStyles": null
+      },
+      "providerName": "Amazon Music"
+    },
+    "quality": null,
+    "queueId": "ea28cedf-3717-4b95-864f-e60533d7cad0",
+    "state": "PAUSED",
+    "template": {
+      "art": {
+        "altText": "Album Art",
+        "artType": "UrlArtSource",
+        "contentType": "image/jpeg",
+        "url": "https://m.media-amazon.com/images/I/51nnhqB34JL._UL600_.jpg"
+      },
+      "backgroundImageUrl": "https://m.media-amazon.com/images/I/71ud1JEJj5L._SL1024_CR0,0,1024,600_SCLZZZZZZZ_.jpg",
+      "templateType": "MainArtTemplate"
+    },
+    "transport": {
+      "closedCaptions": null,
+      "layoutType": "MusicTransportLayout",
+      "lyrics": "ENABLED",
+      "next": "ENABLED",
+      "playPause": "ENABLED",
+      "previous": "ENABLED",
+      "repeat": "HIDDEN",
+      "shuffle": "HIDDEN"
+    },
+    "upNextItems": null,
+    "volume": {
+      "muted": false,
+      "volume": 10
+    }
+  }
+}

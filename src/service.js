@@ -16,7 +16,7 @@
 //     cookie, a token or an account id (AmazonError messages carry none).
 // -----------------------------------------------------------------------------
 
-import { createLogger } from '@gladysassistant/integration-sdk';
+import { MUSIC_PLAYBACK_STATE, createLogger } from '@gladysassistant/integration-sdk';
 import { AlexaClient } from './amazon/client.js';
 import { AmazonError, createQueue } from './amazon/http.js';
 import {
@@ -30,6 +30,7 @@ import {
   audioSsml,
   bindRoutine,
   cleanText,
+  stopNode,
   talkSequence,
   volumeNode,
 } from './amazon/sequences.js';
@@ -44,7 +45,7 @@ import {
 } from './devices/echo.js';
 import { MESSAGES } from './messages.js';
 import { REGIONS } from './regions.js';
-import { StateTracker, statesOf } from './states.js';
+import { StateTracker, nowPlayingOf, statesOf } from './states.js';
 import { UserError } from './i18n.js';
 
 const DEVICE_LIST_MAX_AGE_MS = 30 * 60 * 1000;
@@ -54,6 +55,9 @@ const MAX_DELAY_MS = 15 * 60 * 1000;
 // After a media command, the player is read again once it had time to move.
 const PLAYER_SETTLE_MS = 3000;
 const MAX_STATES_PER_REQUEST = 100;
+// Gladys waits 15 s for an artwork; the core refuses one above 300 KB.
+const ARTWORK_TIMEOUT_MS = 10_000;
+export const MAX_ARTWORK_BYTES = 300 * 1024;
 export const PLAYER_WIDGET = 'player';
 
 const MEDIA_COMMANDS = {
@@ -61,6 +65,13 @@ const MEDIA_COMMANDS = {
   [FEATURES.PAUSE]: 'Pause',
   [FEATURES.NEXT]: 'Next',
   [FEATURES.PREVIOUS]: 'Previous',
+};
+
+// Writable playback state of Gladys 5.3: 0 pauses, 1 plays (/api/np/command),
+// 2 stops (a sequence: the command endpoint has no stop).
+const PLAYBACK_COMMANDS = {
+  [MUSIC_PLAYBACK_STATE.PAUSED]: 'Pause',
+  [MUSIC_PLAYBACK_STATE.PLAYING]: 'Play',
 };
 
 export class EchoService {
@@ -287,6 +298,7 @@ export class EchoService {
       ? await optional(() => this.client.getDoNotDisturb(), 'dnd', 'Do Not Disturb reading')
       : null;
     const states = [];
+    const players = [];
     for (const echo of echos) {
       const reading = { ...this.readings.get(echo.serialNumber) };
       if (volumes?.has(echo.serialNumber)) reading.volume = volumes.get(echo.serialNumber).volume;
@@ -301,23 +313,45 @@ export class EchoService {
       }
       this.readings.set(echo.serialNumber, reading);
       states.push(...statesOf(this.gladys, echo, reading, this.language));
+      players.push([echo, reading]);
     }
-    return this.publish(states);
+    return this.publish(states, players);
   }
 
-  /** Publish the states that changed; resolves with their number. */
-  async publish(states) {
+  /**
+   * Publish what changed; resolves with the number of states sent. The music
+   * features (volume, playback state, track) through publishNowPlaying, which
+   * diffs them itself; the others (Do Not Disturb, the text "now playing")
+   * through the tracker.
+   * @param {object[]} states non-music states, publishStates format
+   * @param {[object, object][]} players [echo, reading] pairs
+   */
+  async publish(states, players = []) {
     const changed = this.tracker.changed(states);
+    let count = changed.length;
     for (let i = 0; i < changed.length; i += MAX_STATES_PER_REQUEST) {
       const batch = changed.slice(i, i + MAX_STATES_PER_REQUEST);
       await this.gladys.publishStates(batch);
       this.tracker.remember(batch);
     }
-    if (changed.length > 0) this.gladys.requestWidgetRefresh(PLAYER_WIDGET);
-    return changed.length;
+    for (const [echo, reading] of players) {
+      const values = nowPlayingOf(echo, reading);
+      if (!values) continue;
+      const result = await this.gladys.publishNowPlaying(
+        externalIdsOf(this.gladys, echo).device,
+        values,
+      );
+      count += result?.count ?? 0;
+    }
+    if (count > 0) this.gladys.requestWidgetRefresh(PLAYER_WIDGET);
+    return count;
   }
 
-  /** A device was added in Gladys: its states must be sent again, now. */
+  /**
+   * A device was added in Gladys, or updated (the "Update" of the Discover
+   * tab adds the 1.1.0 music features): its states must be sent again, now.
+   * The SDK forgot its now-playing snapshot already.
+   */
   async deviceCreated(device) {
     this.tracker.forget(device.external_id);
     const echo = this.echoByExternalId(device.external_id);
@@ -396,6 +430,8 @@ export class EchoService {
         if (!echo.hasPlayer) throw new UserError(MESSAGES.errors.no_player, this.language);
         await this.client.mediaCommand(echo, MEDIA_COMMANDS[key]);
         this.readSoon(echo);
+      } else if (key === FEATURES.PLAYBACK_STATE) {
+        await this.setPlaybackState(echo, Number(value));
       } else if (key === FEATURES.DO_NOT_DISTURB) {
         await this.client.setDoNotDisturb(echo, Number(value) === 1);
         this.remember(echo, { doNotDisturb: Number(value) === 1 });
@@ -407,13 +443,63 @@ export class EchoService {
     });
   }
 
+  /** Pause (0), play (1) or stop (2): the playback state of Gladys 5.3. */
+  async setPlaybackState(echo, state) {
+    if (!echo.hasPlayer) throw new UserError(MESSAGES.errors.no_player, this.language);
+    if (PLAYBACK_COMMANDS[state]) {
+      await this.client.mediaCommand(echo, PLAYBACK_COMMANDS[state]);
+    } else if (state === MUSIC_PLAYBACK_STATE.IDLE) {
+      // A group stops through its speakers, like "Alexa, stop" on them.
+      const speakers = this.speakersOf([echo]);
+      if (speakers.length === 0) throw new UserError(MESSAGES.errors.unknown_device, this.language);
+      await this.client.runSequence(stopNode(speakers, await this.customerId()));
+    } else {
+      throw new UserError(MESSAGES.errors.unknown_command, this.language);
+    }
+    // The new state is published when the Echo reports it.
+    this.readSoon(echo);
+  }
+
   /** Record a value the Echo now has, and publish it. */
   remember(echo, values) {
     const reading = { ...this.readings.get(echo.serialNumber), ...values };
     this.readings.set(echo.serialNumber, reading);
-    return this.publish(statesOf(this.gladys, echo, reading, this.language)).catch((err) =>
+    return this.publish(statesOf(this.gladys, echo, reading, this.language), [
+      [echo, reading],
+    ]).catch((err) =>
       this.logger.warn(`Unable to publish the states of ${echo.name}: ${err.message}`),
     );
+  }
+
+  /**
+   * onMusicGetArtwork: the bytes of an artwork whose URL artworkKey recorded
+   * (a public CDN URL from /api/np/player, https only: see artworkUrlOf).
+   * Read up to the 300 KB the core accepts, never more.
+   */
+  async artwork(key) {
+    const url = this.gladys.artworkUrls?.get(key);
+    if (!url || !/^https:\/\//i.test(url)) throw new Error(`Unknown artwork ${key}`);
+    let response;
+    try {
+      response = await this.fetchImpl(url, { signal: AbortSignal.timeout(ARTWORK_TIMEOUT_MS) });
+    } catch (err) {
+      throw new Error(`Artwork ${key}: ${err.message}`, { cause: err });
+    }
+    if (!response.ok) {
+      await response.body?.cancel().catch(() => {});
+      throw new Error(`Artwork ${key}: HTTP ${response.status}`);
+    }
+    const chunks = [];
+    let size = 0;
+    for await (const chunk of response.body ?? []) {
+      size += chunk.length;
+      if (size > MAX_ARTWORK_BYTES) {
+        throw new Error(`Artwork ${key}: larger than ${MAX_ARTWORK_BYTES / 1024} KB`);
+      }
+      chunks.push(chunk);
+    }
+    if (size === 0) throw new Error(`Artwork ${key}: empty answer`);
+    return Buffer.concat(chunks, size).toString('base64');
   }
 
   readSoon(echo) {
