@@ -68,8 +68,11 @@ Chaque Echo est un appareil. Chaque groupe multi-pièces aussi.
 | Volume                | oui  | non    | 0 à 100                                     |
 | Ne pas déranger       | oui  | non    | activé / désactivé                          |
 | Lecture, pause, préc. | oui¹ | oui    | et suivant                                  |
-| État de lecture       | oui¹ | oui    | 1 pendant la lecture                        |
+| État de lecture       | oui¹ | oui    | 0 pause, 1 lecture, 2 arrêt                 |
 | En cours de lecture   | oui¹ | oui    | « Titre — Artiste »                         |
+| Titre, artiste, album | oui¹ | oui    | lecteur Musique de Gladys 5.3               |
+| Pochette              | oui¹ | oui    | lecteur Musique de Gladys 5.3               |
+| Durée, position       | oui¹ | oui    | lecteur Musique de Gladys 5.3               |
 | Notification          | oui  | oui    | pour l'action « Diffuser une notification » |
 
 ¹ Les Echo qui ont un lecteur de musique (pas un Echo Spot sans musique, par exemple).
@@ -80,6 +83,27 @@ descendez pas sous la valeur par défaut sans raison.
 
 Le réglage **Langue des noms et des messages** donne les noms des fonctionnalités des Echo ajoutés
 ensuite (Gladys les garde une fois l'appareil ajouté) et la langue des messages d'erreur.
+
+## Lecteur Musique de Gladys 5.3
+
+Depuis Gladys 5.3, le widget **Musique** du cœur est un vrai lecteur. Ajoutez-le à un tableau de
+bord et choisissez un Echo : pochette, titre, artiste et album, barre de progression, lecture-pause
+(et arrêt par l'état de lecture), précédent / suivant et volume. Les valeurs sont celles du
+rafraîchissement (toutes les 2 minutes par défaut) et de la lecture faite 3 secondes après chaque
+commande : un morceau lancé à la voix apparaît au rafraîchissement suivant.
+
+- **Echo ajoutés avant la version 1.1.0** : ouvrez **Découvrir** dans l'intégration et cliquez sur
+  **Mettre à jour** sur chaque Echo pour ajouter les nouvelles fonctionnalités (titre, artiste,
+  album, pochette, durée, position). Scènes et tableaux de bord continuent de marcher : aucune
+  fonctionnalité ne change d'identifiant.
+- **État de lecture** : 2 (arrêt) quand rien n'est chargé, là où la version 1.0 donnait 0. Une
+  scène qui attendait 0 sur un arrêt doit maintenant attendre 2. Écrire 2 arrête l'Echo, comme
+  « Alexa, stop ».
+- **Pas disponible**, l'API web d'Alexa ne le permet pas : se déplacer dans un morceau (la barre
+  est en lecture seule), l'aléatoire et la répétition (Amazon ne les indique pas à la lecture), la
+  sourdine, la file d'attente, la navigation et la recherche dans les services de musique (pas de
+  panneau de catalogue).
+- Le widget **Lecteur Echo** de l'intégration reste, avec Ne pas déranger.
 
 ## Dans les scènes
 
@@ -114,8 +138,9 @@ le volume en direct et les boutons précédent / lecture-pause / suivant.
 ## Limites
 
 - API non officielle : elle peut casser quand Amazon la modifie.
-- Pas de sourdine (l'API web n'en propose pas) ni de déclencheur de scène (rien de fiable pour en
-  démarrer une).
+- Pas de sourdine, de déplacement dans un morceau, d'aléatoire ni de répétition (l'API web ne les
+  propose pas, ou ne les indique pas), ni de déclencheur de scène (rien de fiable pour en démarrer
+  une).
 - Deux paroles envoyées au même moment peuvent s'interrompre.
 - Testée seulement sur des réponses reconstituées, jamais encore sur un vrai compte.
 

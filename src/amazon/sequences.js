@@ -10,7 +10,9 @@
 //   - AlexaAnnouncement: a chime, then the text, on every targeted device at
 //     once (one node, a `target.devices` list). Groups are expanded to their
 //     members by the caller;
-//   - Alexa.DeviceControls.Volume: works whether or not something plays.
+//   - Alexa.DeviceControls.Volume: works whether or not something plays;
+//   - Alexa.DeviceControls.Stop: "Alexa, stop" on a list of devices (the
+//     /api/np/command endpoint has no stop).
 // -----------------------------------------------------------------------------
 
 const SEQUENCE = 'com.amazon.alexa.behaviors.model.Sequence';
@@ -116,6 +118,17 @@ export function volumeNode(device, volume, customerId) {
   return operation('Alexa.DeviceControls.Volume', 'amzn1.ask.1p.alexadevicecontrols', {
     ...deviceFields(device, customerId),
     value: Math.round(Math.min(100, Math.max(0, volume))),
+  });
+}
+
+/** Stop what plays on `devices` (groups already expanded), like "Alexa, stop". */
+export function stopNode(devices, customerId) {
+  return operation('Alexa.DeviceControls.Stop', 'amzn1.ask.1p.alexadevicecontrols', {
+    ...deviceFields(devices[0], customerId),
+    devices: devices.map((device) => ({
+      deviceSerialNumber: device.serialNumber,
+      deviceType: device.deviceType,
+    })),
   });
 }
 

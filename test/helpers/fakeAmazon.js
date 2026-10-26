@@ -1,7 +1,9 @@
 // -----------------------------------------------------------------------------
 // A fake Amazon behind a `fetch` function: the sign-in endpoints and the Alexa
 // web API, answering with the fixtures of test/fixtures/amazon. Tests never
-// touch the network.
+// touch the network. The np-player-amazon-music-paused, -spotify-playing and
+// -empty fixtures are real answers of /api/np/player published in public
+// issues (ioBroker.alexa2#1031, alexa_media_player#444).
 //
 //   const amazon = createFakeAmazon();
 //   amazon.override('POST /api/behaviors/preview', () => ({ status: 429, body: 'Rate exceeded' }));
@@ -99,11 +101,12 @@ export function createFakeAmazon({ domain = 'amazon.fr', players = {} } = {}) {
     if (!route) return new Response('Not found', { status: 404 });
     const answer = await route(request);
     if (answer instanceof Error) throw answer;
-    const headers = new Headers({ 'Content-Type': 'application/json' });
+    const headers = new Headers({ 'Content-Type': answer.contentType ?? 'application/json' });
     for (const cookie of answer.cookies ?? []) headers.append('Set-Cookie', cookie);
     const text =
       answer.text ?? (typeof answer.body === 'string' ? answer.body : JSON.stringify(answer.body));
-    return new Response(text, { status: answer.status ?? 200, headers });
+    // `bytes`: an image of a CDN (the artworks of /api/np/player).
+    return new Response(answer.bytes ?? text, { status: answer.status ?? 200, headers });
   }
 
   return {

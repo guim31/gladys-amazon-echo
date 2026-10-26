@@ -20,8 +20,13 @@ export function registerHandlers(gladys, service) {
   gladys.onSetValue((device, feature, value) => service.setValue(device, feature, value));
   gladys.onPoll((device) => service.poll(device));
   gladys.onDeviceCreated((device) => service.deviceCreated(device));
+  gladys.onDeviceUpdated((device) => service.deviceCreated(device));
   gladys.onDeviceDeleted(async (device) => service.tracker.forget(device.external_id));
   gladys.onConfigUpdated((config) => service.configUpdated(config));
+
+  // Gladys 5.3 music player: the artwork of what plays ("music": {} in the
+  // manifest: no catalog, the web API has none worth the name).
+  gladys.onMusicGetArtwork((key) => service.artwork(key));
 
   // The "Connect" button of the account_link field: Amazon's sign-in page.
   gladys.onOAuthAuthorizeUrl(() => service.signInUrl());

@@ -183,6 +183,16 @@ code de ce dépôt. Compléter ce fichier quand un nouveau piège est découvert
 - `test/i18n.test.js` refuse tout « Sie » capitalisé, y compris « Sie kann… » (= elle) en début de
   phrase : reformuler plutôt qu'assouplir le test.
 - Les textes de `section` gardent les `\n` (rendu `pre-wrap`) : une procédure numérotée y tient.
+- **Lecteur Musique de Gladys 5.3 (1.1.0)** : tout ce qui est `music` (volume compris) passe par
+  `publishNowPlaying` (ids `${device}:${type}`, `playback_state` et `volume` déjà à ce format) ;
+  Ne pas déranger et le texte `now_playing` restent sur le `StateTracker`. `/api/np/player` donne
+  `progress` en **secondes** (les messages push en millisecondes). Ni seek (aucune commande), ni
+  aléatoire / répétition (les commandes existent, mais le relevé ne dit pas le mode : seul le canal
+  push le dit, Alexa Media Player le note), ni muet : ne pas les publier en lecture seule, ils
+  resteraient figés. L'arrêt passe par la séquence `Alexa.DeviceControls.Stop`. Pochettes : l'URL
+  nue d'Amazon Music est l'original (jusqu'à 2560 px, 390 Ko) → `._SL400_` ; `_UL600_` (~50 Ko) et
+  Spotify 640 px (~120 Ko) passent tels quels. Réponses réelles dans `test/fixtures/amazon/np-player-*`
+  (issues publiques).
 - `alexa-remote2`/`alexa-cookie2` : 106 paquets et 11 Mo (express), jetons et cookies écrits dans
   leurs journaux dès qu'on leur passe un logger, `de-DE` et « ioBroker » codés en dur. Un client
   `fetch` de quelques centaines de lignes suffit : voir `src/amazon/`.

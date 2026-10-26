@@ -50,7 +50,7 @@ test('an Echo without music player gets no transport controls', () => {
     FEATURES.NOTIFICATION,
     FEATURES.DO_NOT_DISTURB,
   ]);
-  assert.equal(featureKeysOf(bySerial(SERIALS.DOT)).length, 9);
+  assert.equal(featureKeysOf(bySerial(SERIALS.DOT)).length, 15);
 });
 
 test('the locale comes from the device preferences, else from the marketplace', () => {
@@ -87,6 +87,13 @@ test('the feature keys never change (they are part of the external ids)', () => 
     'next',
     'playback_state',
     'now_playing',
+    // Gladys 5.3 music player (1.1.0): key = type, the SDK's default id.
+    'title',
+    'artist',
+    'album',
+    'artwork',
+    'duration',
+    'position',
     'notification',
     'do_not_disturb',
   ]);
